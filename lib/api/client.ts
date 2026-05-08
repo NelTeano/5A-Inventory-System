@@ -99,7 +99,7 @@ function createAxiosInstance(): AxiosInstance {
   const instance = axios.create({
     baseURL:
       process.env.NODE_ENV === "production"
-        ? "https://stockly-inventory.vercel.app/api"
+        ? "https://5-a-inventory-system.vercel.app/api"
         : "http://localhost:3000/api",
     headers: {
       "Content-Type": "application/json",
