@@ -251,7 +251,7 @@ export default function Navbar({ children }: NavbarProps) {
       >
         Skip to main content
       </a>
-      <div className="mx-auto flex w-full h-full max-w-9xl items-center justify-between gap-2 sm:gap-4 px-2 sm:px-4 lg:px-6 overflow-x-hidden">
+      <div className="mx-auto flex w-full h-full max-w-9xl items-center justify-between gap-2 sm:gap-4 px-2 sm:px-4 lg:px-6">
         {/* Left Section - Logo and Brand */}
         <div className="flex items-center gap-3">
           <div

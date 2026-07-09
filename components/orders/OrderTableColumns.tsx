@@ -253,7 +253,7 @@ export const createOrderColumns = (
     header: ({ column }) => <SortableHeader column={column} label="Total" />,
     cell: ({ getValue }) => {
       const total = getValue<number>();
-      return <span className="font-semibold">${total.toFixed(2)}</span>;
+      return <span className="font-semibold">₱{total.toFixed(2)}</span>;
     },
   },
   {

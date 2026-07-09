@@ -591,7 +591,7 @@ export default function CategoryDetailPage({
                     Total Revenue:
                   </span>
                   <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-                    ${stats.totalRevenue.toFixed(2)}
+                    ₱{stats.totalRevenue.toFixed(2)}
                   </span>
                 </div>
 
@@ -611,7 +611,7 @@ export default function CategoryDetailPage({
                     Current Stock Value:
                   </span>
                   <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                    ${stats.totalValue.toFixed(2)}
+                    ₱{stats.totalValue.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -668,7 +668,7 @@ export default function CategoryDetailPage({
                         SKU: {product.sku}
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Stock: {product.quantity} • $
+                        Stock: {product.quantity} • ₱
                         {(product.price ?? 0).toFixed(2)}
                       </p>
                     </div>
@@ -716,7 +716,7 @@ export default function CategoryDetailPage({
                         Product: {order.productName} (SKU: {order.productSku})
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Quantity: {order.quantity} × ${order.price.toFixed(2)} •
+                        Quantity: {order.quantity} × ₱{order.price.toFixed(2)} •
                         Date: {new Date(order.orderDate).toLocaleDateString()}
                       </p>
                     </div>
@@ -727,14 +727,14 @@ export default function CategoryDetailPage({
                         order.proportionalAmount !== order.subtotal ? (
                           <>
                             <span className="text-gray-500 dark:text-white/50 line-through mr-2">
-                              ${order.subtotal.toFixed(2)}
+                              ₱{order.subtotal.toFixed(2)}
                             </span>
                             <span className="text-rose-600 dark:text-rose-400">
-                              ${order.proportionalAmount.toFixed(2)}
+                              ₱{order.proportionalAmount.toFixed(2)}
                             </span>
                           </>
                         ) : (
-                          `$${order.subtotal.toFixed(2)}`
+                          `₱${order.subtotal.toFixed(2)}`
                         )}
                       </p>
                       <Badge

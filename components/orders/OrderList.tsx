@@ -41,7 +41,7 @@ import type { OrderWithSource } from "./OrderTableColumns";
 import type { OrderSourceFilterValue } from "./OrderSourceFilter";
 
 const formatCurrency = (value: number) =>
-  `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /** Customer display: shipping name/email, or placedByName when missing (e.g. Google one-click) */
 function getCustomerDisplay(order: Order): string {

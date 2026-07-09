@@ -21,7 +21,7 @@ import { Package, DollarSign, Truck, FolderTree } from "lucide-react";
 import { Supplier } from "@/types";
 
 const formatCurrency = (value: number) =>
-  `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /**
  * Dynamic import for SupplierTable to enable code splitting

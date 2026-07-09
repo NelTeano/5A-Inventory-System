@@ -21,7 +21,7 @@ import { StatisticsCardSkeleton } from "./StatisticsCardSkeleton";
 import { useDashboard } from "@/hooks/queries/use-dashboard";
 
 const formatCurrency = (value: number) =>
-  `$${value.toLocaleString(undefined, {
+  `₱${value.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;

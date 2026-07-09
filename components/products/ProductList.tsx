@@ -103,7 +103,7 @@ const ProductList = React.memo(() => {
   // Removed debug log - use React DevTools for debugging
 
   const formatCurrency = (value: number) =>
-    `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // Determine loading state - FIXES HYDRATION & FLICKER
   const productsQueryPending = productsQuery.isPending;

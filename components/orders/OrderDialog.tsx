@@ -127,38 +127,38 @@ const paymentStatusOptions: Array<{ value: PaymentStatus; label: string }> = [
   { value: "refunded", label: "Refunded" },
 ];
 
-/** Tax: 7% of subtotal (hardcoded). */
-const TAX_RATE = 0.07;
-/** Shipping: fixed $4.99 (hardcoded). */
-const SHIPPING_FIXED = 4.99;
+// /** Tax: 7% of subtotal (hardcoded). */
+// const TAX_RATE = 0.07;
+// /** Shipping: fixed $4.99 (hardcoded). */
+// const SHIPPING_FIXED = 4.99;
 
 /**
  * Discount percent by subtotal tiers (hardcoded):
  * &lt; $100 → 10%, $100–$300 → 20%, $300–$500 → 30%, $500+ → 50%
  */
-function getDiscountPercent(subtotal: number): number {
-  if (subtotal < 100) return 10;
-  if (subtotal < 300) return 20;
-  if (subtotal < 500) return 30;
-  return 50;
-}
+// function getDiscountPercent(subtotal: number): number {
+//   if (subtotal < 100) return 10;
+//   if (subtotal < 300) return 20;
+//   if (subtotal < 500) return 30;
+//   return 50;
+// }
 
 /**
  * Compute tax, shipping, and discount amounts from subtotal.
  * Used for display and for create-order payload (all roles).
  */
-function getOrderFeesFromSubtotal(subtotal: number): {
-  taxAmount: number;
-  shippingAmount: number;
-  discountPercent: number;
-  discountAmount: number;
-} {
-  const taxAmount = subtotal * TAX_RATE;
-  const shippingAmount = SHIPPING_FIXED;
-  const discountPercent = getDiscountPercent(subtotal);
-  const discountAmount = subtotal * (discountPercent / 100);
-  return { taxAmount, shippingAmount, discountPercent, discountAmount };
-}
+// function getOrderFeesFromSubtotal(subtotal: number): {
+//   taxAmount: number;
+//   shippingAmount: number;
+//   discountPercent: number;
+//   discountAmount: number;
+// } {
+//   const taxAmount = subtotal * TAX_RATE;
+//   const shippingAmount = SHIPPING_FIXED;
+//   const discountPercent = getDiscountPercent(subtotal);
+//   const discountAmount = subtotal * (discountPercent / 100);
+//   return { taxAmount, shippingAmount, discountPercent, discountAmount };
+// }
 
 /**
  * Order Dialog Component
@@ -312,15 +312,15 @@ export default function OrderDialog({
   }, [watchedItems, availableProducts]);
 
   // Tax, shipping, discount: computed from subtotal (hardcoded rules) — no dropdowns
-  const orderFees = useMemo(
-    () => getOrderFeesFromSubtotal(subtotal),
-    [subtotal],
-  );
-  const total =
-    subtotal +
-    orderFees.taxAmount +
-    orderFees.shippingAmount -
-    orderFees.discountAmount;
+  // const orderFees = useMemo(
+  //   () => getOrderFeesFromSubtotal(subtotal),
+  //   [subtotal],
+  // );
+  const total = subtotal;
+    // +
+    // orderFees.taxAmount +
+    // orderFees.shippingAmount -
+    // orderFees.discountAmount;
 
   // Sync billing address with shipping address if checkbox is checked
   useEffect(() => {
@@ -383,16 +383,16 @@ export default function OrderDialog({
       }
 
       // Compute subtotal and fees (tax 7%, shipping $4.99, discount by tier) for payload
-      const submitSubtotal = validItems.reduce((sum, item) => {
-        const product = availableProducts.find((p) => p.id === item.productId);
-        if (!product) return sum;
-        const qty =
-          item.quantity !== undefined && item.quantity !== null
-            ? Number(item.quantity)
-            : 0;
-        return sum + Number(product.price) * qty;
-      }, 0);
-      const fees = getOrderFeesFromSubtotal(submitSubtotal);
+      // const submitSubtotal = validItems.reduce((sum, item) => {
+      //   const product = availableProducts.find((p) => p.id === item.productId);
+      //   if (!product) return sum;
+      //   const qty =
+      //     item.quantity !== undefined && item.quantity !== null
+      //       ? Number(item.quantity)
+      //       : 0;
+      //   return sum + Number(product.price) * qty;
+      // }, 0);
+      // const fees = getOrderFeesFromSubtotal(submitSubtotal);
 
       // Check stock availability for each item
       for (const item of validItems) {
@@ -447,9 +447,6 @@ export default function OrderDialog({
         billingAddress: hasValidAddress(data.billingAddress)
           ? (data.billingAddress as BillingAddress)
           : undefined,
-        tax: fees.taxAmount,
-        shipping: fees.shippingAmount,
-        discount: fees.discountAmount,
         notes: data.notes || undefined,
       };
 
@@ -1055,7 +1052,7 @@ export default function OrderDialog({
                                         value={product.id}
                                         className="cursor-pointer text-gray-900 dark:text-white focus:bg-violet-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white"
                                       >
-                                        {product.name} - $
+                                        {product.name} - ₱
                                         {Number(product.price).toFixed(2)}{" "}
                                         (Stock: {product.quantity})
                                       </SelectItem>
@@ -1156,7 +1153,7 @@ export default function OrderDialog({
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Subtotal - aligned with product column */}
                             <div className="text-sm text-white/70">
-                              Subtotal: ${itemSubtotal.toFixed(2)} (
+                              Subtotal: ₱{itemSubtotal.toFixed(2)} (
                               {selectedProduct.name} × {quantity || 0})
                             </div>
                             {/* Stock validation warning - aligned with quantity column */}
@@ -1303,27 +1300,9 @@ export default function OrderDialog({
                     Order Totals
                   </Label>
                   <div className="p-4 border border-violet-400/20 rounded-lg bg-white/5 space-y-2">
-                    <div className="flex justify-between text-sm text-white/70">
-                      <span>Subtotal:</span>
-                      <span>${subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-white/70">
-                      <span>Tax (7%):</span>
-                      <span>${orderFees.taxAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-white/70">
-                      <span>Shipping:</span>
-                      <span>${orderFees.shippingAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-white/70">
-                      <span>Discount ({orderFees.discountPercent}%):</span>
-                      <span className="text-red-400">
-                        -${orderFees.discountAmount.toFixed(2)}
-                      </span>
-                    </div>
                     <div className="flex justify-between text-base font-semibold text-white pt-2 border-t border-violet-400/20">
                       <span>Total:</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>₱{total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

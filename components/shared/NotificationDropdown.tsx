@@ -135,7 +135,7 @@ export function NotificationDropdown({
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-lg border border-rose-400/30 dark:border-white/10 bg-white/95 dark:bg-popover/95 backdrop-blur-sm shadow-[0_30px_80px_rgba(225,29,72,0.35)] dark:shadow-[0_30px_80px_rgba(225,29,72,0.25)] z-50 overflow-hidden">
+    <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-lg border border-rose-400/30 dark:border-white/10 bg-white/95 dark:bg-popover/95 backdrop-blur-sm shadow-[0_30px_80px_rgba(225,29,72,0.35)] dark:shadow-[0_30px_80px_rgba(225,29,72,0.25)] z-[60] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-rose-400/20 dark:border-white/10">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
