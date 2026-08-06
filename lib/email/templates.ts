@@ -324,7 +324,7 @@ export function generateInventoryReportEmail(
           <div style="font-size: 14px; color: #666;">Total Products</div>
         </div>
         <div style="background: #e8f8f5; border-radius: 8px; padding: 20px; text-align: center;">
-          <div style="font-size: 32px; font-weight: bold; color: #27ae60; margin-bottom: 5px;">$${totalValue.toLocaleString()}</div>
+          <div style="font-size: 32px; font-weight: bold; color: #27ae60; margin-bottom: 5px;">₱${totalValue.toLocaleString()}</div>
           <div style="font-size: 14px; color: #666;">Total Value</div>
         </div>
         <div style="background: #fff3cd; border-radius: 8px; padding: 20px; text-align: center;">
@@ -353,7 +353,7 @@ Report Date: ${reportDate}
 
 Summary:
 - Total Products: ${totalProducts}
-- Total Value: $${totalValue.toLocaleString()}
+- Total Value: ₱${totalValue.toLocaleString()}
 - Low Stock Items: ${lowStockItems}
 - Out of Stock: ${outOfStockItems}
 

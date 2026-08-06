@@ -13,7 +13,7 @@ import {
   Package,
   Calendar,
   Truck,
-  DollarSign,
+  PhilippinePeso,
   BarChart3,
   ShoppingCart,
   User,

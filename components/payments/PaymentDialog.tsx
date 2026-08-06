@@ -68,7 +68,7 @@ export default function PaymentDialog({
         {trigger || (
           <Button disabled={disabled}>
             <CreditCard className="mr-2 h-4 w-4" />
-            Pay ${amount.toFixed(2)}
+            Pay ₱${amount.toFixed(2)}
           </Button>
         )}
       </DialogTrigger>
@@ -114,7 +114,7 @@ export default function PaymentDialog({
                       <span className="text-white truncate">{item.name}</span>
                     </span>
                     <span className="font-medium text-white shrink-0">
-                      ${item.price.toFixed(2)}
+                      ₱${item.price.toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -141,20 +141,20 @@ export default function PaymentDialog({
                   {tax != null && tax > 0 && (
                     <div className="flex items-center justify-between text-white">
                       <span>Tax</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span>₱{tax.toFixed(2)}</span>
                     </div>
                   )}
                   {shipping != null && shipping > 0 && (
                     <div className="flex items-center justify-between text-white">
                       <span>Shipping</span>
-                      <span>${shipping.toFixed(2)}</span>
+                      <span>₱{shipping.toFixed(2)}</span>
                     </div>
                   )}
                   {discount != null && discount > 0 && (
                     <div className="flex items-center justify-between text-white">
                       <span>Discount</span>
                       <span className="text-emerald-400">
-                        -${discount.toFixed(2)}
+                        -₱{discount.toFixed(2)}
                       </span>
                     </div>
                   )}
@@ -167,7 +167,7 @@ export default function PaymentDialog({
             <div className="flex items-center justify-between pt-1">
               <span className="font-semibold text-white">Total</span>
               <span className="text-xl font-semibold text-white">
-                ${amount.toFixed(2)}
+                ₱{amount.toFixed(2)}
               </span>
             </div>
           </div>

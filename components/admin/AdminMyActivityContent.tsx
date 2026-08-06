@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   ShoppingCart,
-  DollarSign,
+  PhilippinePeso,
   Package,
   Users,
   Truck,
@@ -263,7 +263,7 @@ export default function AdminMyActivityContent() {
   }, [orders, searchTerm, authUser?.name, authUser?.email]);
 
   const formatCurrency = (value: number) =>
-    `$${value.toLocaleString(undefined, {
+    `₱${value.toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
@@ -348,7 +348,7 @@ export default function AdminMyActivityContent() {
                 title="Total order value"
                 value={formatCurrency(stats.totalRevenue)}
                 description="Your orders history (self)"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="emerald"
                 badges={[
                   { label: "Paid", value: formatCurrency(stats.paidAmount) },
@@ -563,7 +563,7 @@ export default function AdminMyActivityContent() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-800 dark:text-gray-200">
-                          ${Number(order.total).toFixed(2)}
+                          ₱{Number(order.total).toFixed(2)}
                         </TableCell>
                         <TableCell className="text-gray-800 dark:text-gray-200">
                           {order.items?.length ?? 0}

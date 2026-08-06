@@ -70,7 +70,9 @@ function formatDate(date: Date | string): string {
  * Format currency
  */
 function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  // Standard PDF fonts like Helvetica may not support the peso sign (₱).
+  // Use a text-based currency prefix that renders reliably across PDF viewers.
+  return `PHP ${amount.toFixed(2)}`;
 }
 
 /**
@@ -81,11 +83,11 @@ export function generateInvoicePDF(data: InvoicePDFData): string {
   const doc = new jsPDF();
 
   // Company defaults
-  const companyName = data.companyName || "Stock Inventory Store";
+  const companyName = data.companyName || "5A and Luvtech";
   const companyAddress =
-    data.companyAddress || "123 Main St, New York, NY 10001";
-  const companyPhone = data.companyPhone || "+1 (555) 123-4567";
-  const companyEmail = data.companyEmail || "billing@stockinventory.com";
+    data.companyAddress || "Nyugan Rd. Brgy. Sabutan Silang, Cavite";
+  const companyPhone = data.companyPhone || "+63 936 8354 402";
+  const companyEmail = data.companyEmail || "luvtech02@gmail.com";
 
   // Colors
   const primaryColor = [59, 130, 246] as [number, number, number]; // Blue

@@ -17,7 +17,6 @@ import {
   Truck,
   Edit,
   Trash2,
-  DollarSign,
   PhilippinePeso,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

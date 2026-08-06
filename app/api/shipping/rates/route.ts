@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
         terms: rate.servicelevel?.terms || "",
       },
       amount: rate.amount || "0",
-      currency: rate.currency || "USD",
+      currency: rate.currency || "PHP",
       estimatedDays: rate.estimatedDays,
       durationTerms: rate.durationTerms,
     }));

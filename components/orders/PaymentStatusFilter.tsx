@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { CreditCard, CheckCircle2, DollarSign, Undo2 } from "lucide-react";
+import { CreditCard, CheckCircle2, PhilippinePeso, Undo2 } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -43,7 +43,7 @@ const paymentStatuses: PaymentStatusOption[] = [
   {
     value: "partial",
     label: "Partial",
-    icon: <DollarSign className="h-4 w-4" />,
+    icon: <PhilippinePeso className="h-4 w-4" />,
   },
   {
     value: "refunded",

@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
                 netWeight: weightPerItemStr,
                 massUnit: "lb" as const,
                 valueAmount: item.subtotal.toFixed(2),
-                valueCurrency: "USD" as const,
+                valueCurrency: "PHP" as const,
                 originCountry: "US" as const,
               }))
             : [
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
                   netWeight: baseParcelWeight,
                   massUnit: "lb" as const,
                   valueAmount: order.subtotal.toFixed(2),
-                  valueCurrency: "USD" as const,
+                  valueCurrency: "PHP" as const,
                   originCountry: "US" as const,
                 },
               ];

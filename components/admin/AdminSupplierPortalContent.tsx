@@ -15,7 +15,7 @@ import {
   Truck,
   Package,
   ShoppingCart,
-  DollarSign,
+  PhilippinePeso,
   ArrowRight,
   Loader2,
 } from "lucide-react";
@@ -207,8 +207,8 @@ export default function AdminSupplierPortalContent({
               />
               <AnalyticsCard
                 title="Inventory Value"
-                value={`$${stats.counts?.totalValue.toLocaleString()}`}
-                icon={DollarSign}
+                value={`₱${stats.counts?.totalValue.toLocaleString()}`}
+                icon={PhilippinePeso}
                 description="Total product value"
                 variant="amber"
               />
@@ -344,7 +344,7 @@ export default function AdminSupplierPortalContent({
                         {o.status}
                       </Badge>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        ${o.total.toLocaleString()}
+                        ₱{Number(o.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                   </li>

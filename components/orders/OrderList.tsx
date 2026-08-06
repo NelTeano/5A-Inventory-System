@@ -29,7 +29,7 @@ import OrderDialog from "./OrderDialog";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/home/StatisticsCardSkeleton";
 import {
-  DollarSign,
+  PhilippinePeso,
   CreditCard,
   ShoppingCart,
   FileText,
@@ -269,7 +269,7 @@ const OrderList = React.memo(
                     ordersPageStats.totalInventoryValue ?? 0,
                   )}
                   description="Total inventory value"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="violet"
                   badges={[
                     {
@@ -312,7 +312,7 @@ const OrderList = React.memo(
                       0,
                   )}
                   description="Profits (excl. cancelled)"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="emerald"
                   badges={[
                     {
@@ -548,7 +548,7 @@ const OrderList = React.memo(
                   title="Total Spent"
                   value={formatCurrency(clientPortalDashboard.totalSpent)}
                   description="Total order value"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="emerald"
                   badges={[
                     {
@@ -731,7 +731,7 @@ const OrderList = React.memo(
                       title="Total Revenue"
                       value={formatCurrency(d.totalRevenue ?? 0)}
                       description="Revenue from your products (excl. cancelled)"
-                      icon={DollarSign}
+                      icon={PhilippinePeso}
                       variant="amber"
                       badges={[
                         {
@@ -891,7 +891,7 @@ const OrderList = React.memo(
                       .totalInventoryValue ?? 0,
                   )}
                   description="Total inventory value"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="violet"
                   badges={[
                     {

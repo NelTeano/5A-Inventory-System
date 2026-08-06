@@ -20,7 +20,7 @@ import { StatisticsCardSkeleton } from "@/components/home/StatisticsCardSkeleton
 import { AnalyticsCard } from "@/components/ui/analytics-card";
 import { AnalyticsCardSkeleton } from "@/components/ui/analytics-card-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Package, DollarSign, Truck, FolderTree } from "lucide-react";
+import { Package, PhilippinePeso, Truck, FolderTree } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ProductTable = dynamic(
@@ -266,7 +266,7 @@ const ProductList = React.memo(() => {
                     title="Product Value"
                     value={formatCurrency(d.productValue ?? 0)}
                     description="Total Product value assigned by owner"
-                    icon={DollarSign}
+                    icon={PhilippinePeso}
                     variant="violet"
                     badges={[
                       {
@@ -328,7 +328,7 @@ const ProductList = React.memo(() => {
                     title="Total Revenue"
                     value={formatCurrency(d.totalRevenue ?? 0)}
                     description="Revenue from your products (excl. cancelled)"
-                    icon={DollarSign}
+                    icon={PhilippinePeso}
                     variant="amber"
                     badges={[
                       {
@@ -396,7 +396,7 @@ const ProductList = React.memo(() => {
                 title="Total Value"
                 value={formatCurrency(dashboard.totalInventoryValue ?? 0)}
                 description="Total inventory value"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="violet"
                 badges={[
                   {
@@ -506,7 +506,7 @@ const ProductList = React.memo(() => {
                   productsPageStats.totalInventoryValue ?? 0,
                 )}
                 description="Total inventory value"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="violet"
                 badges={[
                   {

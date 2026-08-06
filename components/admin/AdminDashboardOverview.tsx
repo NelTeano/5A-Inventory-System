@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   ShoppingCart,
-  DollarSign,
+  PhilippinePeso,
   Package,
   Users,
   TrendingUp,
@@ -204,11 +204,11 @@ export default function AdminDashboardOverview({
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Revenue
               </CardTitle>
-              <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <PhilippinePeso className="h-4 w-4 text-green-600 dark:text-green-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-semibold">
-                $
+                ₱
                 {stats.totalRevenue.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -284,7 +284,7 @@ export default function AdminDashboardOverview({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-semibold">
-                $
+                ₱
                 {stats.avgOrderValue.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -364,7 +364,7 @@ export default function AdminDashboardOverview({
                         {order.id.slice(0, 8)}…
                       </TableCell>
                       <TableCell>{getCustomerDisplay(order)}</TableCell>
-                      <TableCell>${Number(order.total).toFixed(2)}</TableCell>
+                      <TableCell>₱{Number(order.total).toFixed(2)}</TableCell>
                       <TableCell>{order.items?.length ?? 0}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {format(

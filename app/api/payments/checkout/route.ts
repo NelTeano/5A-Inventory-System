@@ -108,18 +108,19 @@ export async function POST(request: NextRequest) {
           );
         }
         const parts: string[] = [];
-        if (order.subtotal) parts.push(`Subtotal $${order.subtotal.toFixed(2)}`);
-        if (order.tax && order.tax > 0) parts.push(`Tax $${order.tax.toFixed(2)}`);
+        if (order.subtotal) parts.push(`Subtotal ₱${order.subtotal.toFixed(2)}`);
+        if (order.tax && order.tax > 0) parts.push(`Tax ₱${order.tax.toFixed(2)}`);
         if (order.shipping && order.shipping > 0)
-          parts.push(`Shipping $${order.shipping.toFixed(2)}`);
-        parts.push(`Discount -$${order.discount.toFixed(2)}`);
+          parts.push(`Shipping ₱${order.shipping.toFixed(2)}`);
+        parts.push(`Discount -₱${order.discount.toFixed(2)}`);
         lineItems = [
           {
             price_data: {
-              currency: "usd",
+              currency: "php",
               product_data: {
                 name: `Order ${order.orderNumber}`,
-                description: parts.join(" · ") + ` → Total $${order.total.toFixed(2)}`,
+                description:
+                  parts.join(" · ") + ` → Total ₱${order.total.toFixed(2)}`,
               },
               unit_amount: totalCents,
             },
@@ -129,7 +130,7 @@ export async function POST(request: NextRequest) {
       } else {
         lineItems = order.items.map((item) => ({
           price_data: {
-            currency: "usd",
+            currency: "php",
             product_data: {
               name: item.productName,
               description: item.sku ? `SKU: ${item.sku}` : undefined,
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
         if (order.tax && order.tax > 0) {
           lineItems.push({
             price_data: {
-              currency: "usd",
+              currency: "php",
               product_data: { name: "Tax" },
               unit_amount: Math.round(order.tax * 100),
             },
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
         if (order.shipping && order.shipping > 0) {
           lineItems.push({
             price_data: {
-              currency: "usd",
+              currency: "php",
               product_data: { name: "Shipping" },
               unit_amount: Math.round(order.shipping * 100),
             },
@@ -214,7 +215,7 @@ export async function POST(request: NextRequest) {
       lineItems = [
         {
           price_data: {
-            currency: "usd",
+            currency: "php",
             product_data: {
               name: `Invoice ${invoice.invoiceNumber}`,
               description: `Payment for invoice ${invoice.invoiceNumber}`,

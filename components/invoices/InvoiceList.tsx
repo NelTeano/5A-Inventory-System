@@ -28,7 +28,7 @@ import InvoiceDialog from "./InvoiceDialog";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/home/StatisticsCardSkeleton";
 import {
-  DollarSign,
+  PhilippinePeso,
   CreditCard,
   ShoppingCart,
   FileText,
@@ -39,7 +39,7 @@ import type { InvoiceWithSource } from "./InvoiceTableColumns";
 import type { InvoiceSourceFilterValue } from "./InvoiceSourceFilter";
 
 const formatCurrency = (value: number) =>
-  `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const InvoiceTable = dynamic(
   () =>
@@ -251,7 +251,7 @@ const InvoiceList = React.memo(
                     invoicesPageStats.totalInventoryValue ?? 0,
                   )}
                   description="Total inventory value"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="violet"
                   badges={[
                     {
@@ -294,7 +294,7 @@ const InvoiceList = React.memo(
                       0,
                   )}
                   description="Profits (excl. cancelled)"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="emerald"
                   badges={[
                     {
@@ -538,7 +538,7 @@ const InvoiceList = React.memo(
                   title="Total Spent"
                   value={formatCurrency(clientPortalDashboard.totalSpent)}
                   description="Total order value"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="emerald"
                   badges={[
                     {
@@ -702,7 +702,7 @@ const InvoiceList = React.memo(
                       .totalInventoryValue ?? 0,
                   )}
                   description="Total inventory value"
-                  icon={DollarSign}
+                  icon={PhilippinePeso}
                   variant="violet"
                   badges={[
                     {

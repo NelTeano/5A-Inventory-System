@@ -31,7 +31,7 @@ import {
   Trash2,
   ShoppingCart,
   FileText,
-  DollarSign,
+  PhilippinePeso,
   Package,
   Truck,
   Tag,
@@ -332,7 +332,7 @@ export default function AdminUserManagementDetailContent() {
                 </div>
                 <div>
                   <Label className="text-gray-600 dark:text-gray-400">
-                    Last Updated
+                    Last Update
                   </Label>
                   <p className="font-medium mt-1 text-gray-900 dark:text-white">
                     {u.updatedAt
@@ -431,7 +431,7 @@ export default function AdminUserManagementDetailContent() {
                   "dark:border-sky-400/30 dark:bg-sky-500/20",
                 )}
               >
-                <DollarSign className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                <PhilippinePeso className="h-5 w-5 text-sky-600 dark:text-sky-400" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -475,7 +475,7 @@ export default function AdminUserManagementDetailContent() {
                 </div>
               </Link>
               <div className="flex items-center gap-2 p-3 rounded-xl border border-violet-200/40 dark:border-white/10 bg-white/30 dark:bg-white/5">
-                <DollarSign className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                <PhilippinePeso className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                 <div>
                   <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                     ${(overview.totalRevenue ?? 0).toLocaleString()}
@@ -486,7 +486,7 @@ export default function AdminUserManagementDetailContent() {
                 </div>
               </div>
               <div className="flex items-center gap-2 p-3 rounded-xl border border-emerald-200/40 dark:border-white/10 bg-white/30 dark:bg-white/5">
-                <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <PhilippinePeso className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <div>
                   <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                     ${overview.totalSpent.toLocaleString()}
@@ -497,7 +497,7 @@ export default function AdminUserManagementDetailContent() {
                 </div>
               </div>
               <div className="flex items-center gap-2 p-3 rounded-xl border border-amber-200/40 dark:border-white/10 bg-white/30 dark:bg-white/5">
-                <DollarSign className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <PhilippinePeso className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 <div>
                   <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                     ${overview.totalDue.toLocaleString()}

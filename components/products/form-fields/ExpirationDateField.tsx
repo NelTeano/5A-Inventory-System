@@ -1,5 +1,5 @@
 /**
- * Product Expiration Date Field Component
+ * Product Last Update Field Component
  * Uses native date input with calendar icon
  */
 
@@ -39,7 +39,7 @@ export default function ExpirationDateField() {
   return (
     <div className="mt-5 flex flex-col gap-2">
       <Label htmlFor="expiration-date" className="text-white/80">
-        Expiration Date (Optional)
+        Last Update (Optional)
       </Label>
       <div className="relative">
         <Input
