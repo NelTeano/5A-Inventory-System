@@ -23,7 +23,7 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
-  DollarSign,
+  PhilippinePeso,
   Download,
   Eye,
   Package,
@@ -266,21 +266,21 @@ export default function BusinessInsightPage({
 
     // Price range distribution
     const priceRanges = [
-      { name: "$0-$100", min: 0, max: 100 },
-      { name: "$100-$500", min: 100, max: 500 },
-      { name: "$500-$1000", min: 500, max: 1000 },
-      { name: "$1000-$2000", min: 1000, max: 2000 },
-      { name: "$2000+", min: 2000, max: Infinity },
+      { name: "₱0-₱100", min: 0, max: 100 },
+      { name: "₱100-₱500", min: 100, max: 500 },
+      { name: "₱500-₱1000", min: 500, max: 1000 },
+      { name: "₱1000-₱2000", min: 1000, max: 2000 },
+      { name: "₱2000+", min: 2000, max: Infinity },
     ];
 
     const priceRangeDistribution = priceRanges.map((range) => ({
       name: range.name,
       value: filteredProducts.filter((product) => {
-        if (range.name === "$2000+") {
-          // For $2000+ range, include products > $2000 (not including $2000)
+        if (range.name === "₱2000+") {
+          // For ₱2000+ range, include products > ₱2000 (not including ₱2000)
           return product.price > 2000;
-        } else if (range.name === "$1000-$2000") {
-          // For $1000-$2000 range, include products >= $1000 and <= $2000
+        } else if (range.name === "₱1000-₱2000") {
+          // For ₱1000-₱2000 range, include products >= ₱1000 and <= ₱2000
           return product.price >= range.min && product.price <= range.max;
         } else {
           // For other ranges, include products >= min and < max (exclusive upper bound)
@@ -502,7 +502,7 @@ export default function BusinessInsightPage({
         {
           Section: "Key Metrics",
           Metric: "Total Value",
-          Value: `$${analyticsData.totalValue.toLocaleString()}`,
+          Value: `₱${analyticsData.totalValue.toLocaleString()}`,
           "Additional Info": "",
         },
         {
@@ -526,7 +526,7 @@ export default function BusinessInsightPage({
         {
           Section: "Key Metrics",
           Metric: "Average Price",
-          Value: `$${analyticsData.averagePrice.toFixed(2)}`,
+          Value: `₱${analyticsData.averagePrice.toFixed(2)}`,
           "Additional Info": "",
         },
         {
@@ -538,7 +538,7 @@ export default function BusinessInsightPage({
         {
           Section: "Key Metrics",
           Metric: "Value Density",
-          Value: `$${analyticsData.valueDensity.toFixed(2)}`,
+          Value: `₱${analyticsData.valueDensity.toFixed(2)}`,
           "Additional Info": "",
         },
         {
@@ -556,7 +556,7 @@ export default function BusinessInsightPage({
           Section: "Category Distribution",
           Metric: cat.name,
           Value: cat.value.toString(),
-          "Additional Info": `Count: ${cat.count}, Value: $${cat.totalValue.toLocaleString()}`,
+          "Additional Info": `Count: ${cat.count}, Value: ₱${cat.totalValue.toLocaleString()}`,
         })),
 
         // Empty row separator
@@ -588,7 +588,7 @@ export default function BusinessInsightPage({
         ...analyticsData.topProducts.map((product, index) => ({
           Section: "Top Products",
           Metric: product.name,
-          Value: `$${product.value.toLocaleString()}`,
+          Value: `₱${product.value.toLocaleString()}`,
           "Additional Info": `Quantity: ${product.quantity}`,
         })),
 
@@ -647,7 +647,7 @@ export default function BusinessInsightPage({
         { Metric: "Total Products", Value: analyticsData.totalProducts },
         {
           Metric: "Total Value",
-          Value: `$${analyticsData.totalValue.toLocaleString()}`,
+          Value: `₱${analyticsData.totalValue.toLocaleString()}`,
         },
         { Metric: "Low Stock Items", Value: analyticsData.lowStockItems },
         { Metric: "Out of Stock Items", Value: analyticsData.outOfStockItems },
@@ -657,7 +657,7 @@ export default function BusinessInsightPage({
         },
         {
           Metric: "Average Price",
-          Value: `$${analyticsData.averagePrice.toFixed(2)}`,
+          Value: `₱${analyticsData.averagePrice.toFixed(2)}`,
         },
         {
           Metric: "Stock Utilization",
@@ -665,7 +665,7 @@ export default function BusinessInsightPage({
         },
         {
           Metric: "Value Density",
-          Value: `$${analyticsData.valueDensity.toFixed(2)}`,
+          Value: `₱${analyticsData.valueDensity.toFixed(2)}`,
         },
         {
           Metric: "Stock Coverage",
@@ -709,7 +709,7 @@ export default function BusinessInsightPage({
   const buildAiSummary = useCallback(() => {
     const parts = [
       `Total products: ${analyticsData.totalProducts}.`,
-      `Total inventory value: $${analyticsData.totalValue.toLocaleString()}.`,
+      `Total inventory value: ₱${analyticsData.totalValue.toLocaleString()}.`,
       `Low stock items (qty ≤ 20): ${analyticsData.lowStockItems}.`,
       `Out of stock: ${analyticsData.outOfStockItems}.`,
       `Stock utilization: ${analyticsData.stockUtilization.toFixed(1)}%.`,
@@ -919,8 +919,8 @@ export default function BusinessInsightPage({
                 />
                 <AnalyticsCard
                   title="Total Value"
-                  value={`$${analyticsData.totalValue.toLocaleString()}`}
-                  icon={DollarSign}
+                  value={`₱${analyticsData.totalValue.toLocaleString()}`}
+                  icon={PhilippinePeso}
                   variant="emerald"
                   description="Total inventory value"
                 />
@@ -1058,7 +1058,7 @@ export default function BusinessInsightPage({
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 text-sm sm:text-base">
                       <ChartCard
                         title="Sales / Order Value Trend"
-                        icon={DollarSign}
+                        icon={PhilippinePeso}
                         variant="emerald"
                       >
                         <ResponsiveChartContainer>
@@ -1069,8 +1069,8 @@ export default function BusinessInsightPage({
                             <Tooltip
                               formatter={(value) => [
                                 value != null
-                                  ? `$${Number(value).toLocaleString()}`
-                                  : "$0",
+                                  ? `₱${Number(value).toLocaleString()}`
+                                  : "₱0",
                                 "Revenue",
                               ]}
                             />
@@ -1155,8 +1155,8 @@ export default function BusinessInsightPage({
                           <Tooltip
                             formatter={(value) => [
                               value != null
-                                ? `$${Number(value).toLocaleString()}`
-                                : "$0",
+                                ? `₱${Number(value).toLocaleString()}`
+                                : "₱0",
                               "Value",
                             ]}
                           />
@@ -1182,8 +1182,8 @@ export default function BusinessInsightPage({
                           <Tooltip
                             formatter={(value) => [
                               value != null
-                                ? `$${Number(value).toLocaleString()}`
-                                : "$0",
+                                ? `₱${Number(value).toLocaleString()}`
+                                : "₱0",
                               "Value",
                             ]}
                           />
@@ -1213,8 +1213,8 @@ export default function BusinessInsightPage({
                           <Tooltip
                             formatter={(value) => [
                               value
-                                ? `$${Number(value).toLocaleString()}`
-                                : "$0",
+                                ? `₱${Number(value).toLocaleString()}`
+                                : "₱0",
                               "Value",
                             ]}
                             labelFormatter={(label) => `Product: ${label}`}
@@ -1317,7 +1317,7 @@ export default function BusinessInsightPage({
                     Average Price
                   </span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    ${analyticsData.averagePrice.toFixed(2)}
+                    ₱ {analyticsData.averagePrice.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -1379,7 +1379,7 @@ export default function BusinessInsightPage({
                     Value Density
                   </span>
                   <span className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
-                    ${analyticsData.valueDensity.toFixed(2)} per product
+                    ₱ {analyticsData.valueDensity.toFixed(2)} per product
                   </span>
                 </div>
               </div>

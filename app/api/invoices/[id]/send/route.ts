@@ -105,7 +105,7 @@ export async function POST(
           line_items: [
             {
               price_data: {
-                currency: "usd",
+                currency: "php",
                 unit_amount: Math.round(invoice.amountDue * 100), // Stripe uses cents
                 product_data: {
                   name: `Invoice ${invoice.invoiceNumber}`,

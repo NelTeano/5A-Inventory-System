@@ -15,7 +15,7 @@ import {
   Calendar,
   Tag,
   Truck,
-  DollarSign,
+  PhilippinePeso,
   TrendingUp,
   ShoppingCart,
   BarChart3,

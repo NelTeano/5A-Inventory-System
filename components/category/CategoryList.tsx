@@ -17,7 +17,7 @@ import CategoryFilters from "./CategoryFilters";
 import AddCategoryDialog from "./CategoryDialog";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/home/StatisticsCardSkeleton";
-import { Package, DollarSign, Truck, FolderTree } from "lucide-react";
+import { Package, PhilippinePeso, Truck, FolderTree } from "lucide-react";
 import { Category } from "@/types";
 
 const formatCurrency = (value: number) =>
@@ -163,7 +163,7 @@ const CategoryList = React.memo(() => {
                   categoriesPageStats.totalInventoryValue ?? 0,
                 )}
                 description="Total inventory value"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="violet"
                 badges={[
                   {

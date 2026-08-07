@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Calendar,
-  DollarSign,
+  PhilippinePeso,
   FileText,
   Loader2,
   MapPin,
@@ -817,7 +817,7 @@ export default function AdminOrderDetailContent({
                 "dark:border-teal-400/30 dark:bg-teal-500/20",
               )}
             >
-              <DollarSign className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+              <PhilippinePeso className="h-5 w-5 text-teal-600 dark:text-teal-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Order Summary

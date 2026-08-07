@@ -186,7 +186,7 @@ export function createProductColumns(
   },
   {
     id: "expirationDate",
-    header: "Expiration Date",
+    header: "Last Update",
     cell: ({ row }) => {
       const expirationDate = row.original.expirationDate;
       if (!expirationDate) {

@@ -47,7 +47,7 @@ interface InvoiceDialogProps {
 }
 
 const fmt = (v: number) =>
-  `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `₱${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /**
  * Invoice Dialog Component
@@ -615,7 +615,7 @@ export default function InvoiceDialog({
               </Select>
               {selectedOrder && (
                 <p className="text-xs text-white/60">
-                  Order Total: ${selectedOrder.total.toFixed(2)} | Items: {selectedOrder.items?.length || 0}
+                  Order Total: ₱ {selectedOrder.total.toFixed(2)} | Items: {selectedOrder.items?.length || 0}
                 </p>
               )}
             </div>

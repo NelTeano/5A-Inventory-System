@@ -23,7 +23,7 @@ import { useAuth } from "@/contexts";
 import {
   Package,
   ShoppingCart,
-  DollarSign,
+  PhilippinePeso,
   AlertTriangle,
   TrendingUp,
   Clock,
@@ -188,7 +188,7 @@ export default function SupplierPortalPage() {
                 },
                 {
                   label: "Product value",
-                  value: `$${(dashboard.productValue ?? 0).toLocaleString(
+                  value: `₱${(dashboard.productValue ?? 0).toLocaleString(
                     undefined,
                     { minimumFractionDigits: 2, maximumFractionDigits: 2 },
                   )}`,
@@ -252,14 +252,14 @@ export default function SupplierPortalPage() {
             />
             <StatisticsCard
               title="Total Revenue"
-              value={`$${(dashboard.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              value={`₱${(dashboard.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               description="Revenue from your products (excl. cancelled)"
-              icon={DollarSign}
+              icon={PhilippinePeso}
               variant="violet"
               badges={[
                 {
                   label: "Paid",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.revenueBreakdown?.paid ?? dashboard.paidRevenue
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -268,7 +268,7 @@ export default function SupplierPortalPage() {
                 },
                 {
                   label: "Due",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.revenueBreakdown?.due ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -277,7 +277,7 @@ export default function SupplierPortalPage() {
                 },
                 {
                   label: "Refund",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.revenueBreakdown?.refund ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -286,7 +286,7 @@ export default function SupplierPortalPage() {
                 },
                 {
                   label: "Pending",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.revenueBreakdown?.pending ??
                     dashboard.unpaidRevenue
                   ).toLocaleString(undefined, {
@@ -298,7 +298,7 @@ export default function SupplierPortalPage() {
                   ? [
                       {
                         label: "Avg/Order",
-                        value: `$${(
+                        value: `₱${(
                           dashboard.totalRevenue /
                           Math.max(
                             1,
@@ -347,7 +347,7 @@ export default function SupplierPortalPage() {
                   <YAxis />
                   <Tooltip
                     formatter={(value) => [
-                      `$${Number(value).toLocaleString()}`,
+                      `₱${Number(value).toLocaleString()}`,
                       "Revenue",
                     ]}
                   />
@@ -409,7 +409,7 @@ export default function SupplierPortalPage() {
                               </Link>
                             </TableCell>
                             <TableCell className="text-right">
-                              ${order.total.toFixed(2)}
+                              ₱{order.total.toFixed(2)}
                             </TableCell>
                             <TableCell>
                               {getStatusBadge(order.status)}

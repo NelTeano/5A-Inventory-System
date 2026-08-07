@@ -202,7 +202,7 @@ export const createInvoiceColumns = (
     cell: ({ getValue }) => {
       const total = getValue<number>();
       return (
-        <span className="font-semibold">${total.toFixed(2)}</span>
+        <span className="font-semibold">₱{total.toFixed(2)}</span>
       );
     },
   },
@@ -213,7 +213,7 @@ export const createInvoiceColumns = (
       const amountDue = getValue<number>();
       return (
         <span className={`font-semibold ${amountDue > 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
-          ${amountDue.toFixed(2)}
+          ₱{amountDue.toFixed(2)}
         </span>
       );
     },

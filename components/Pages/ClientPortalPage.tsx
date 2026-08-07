@@ -27,7 +27,7 @@ import { useAuth } from "@/contexts";
 import {
   ShoppingCart,
   FileText,
-  DollarSign,
+  PhilippinePeso,
   AlertCircle,
   TrendingUp,
   Clock,
@@ -265,17 +265,17 @@ export default function ClientPortalPage() {
             />
             <StatisticsCard
               title="Total Spent"
-              value={`$${dashboard.totalSpent.toLocaleString(undefined, {
+              value={`₱${dashboard.totalSpent.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}`}
               description="Total order value"
-              icon={DollarSign}
+              icon={PhilippinePeso}
               variant="emerald"
               badges={[
                 {
                   label: "Paid",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.paymentBreakdown?.paid ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -284,7 +284,7 @@ export default function ClientPortalPage() {
                 },
                 {
                   label: "Due",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.paymentBreakdown?.due ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -293,7 +293,7 @@ export default function ClientPortalPage() {
                 },
                 {
                   label: "Refund",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.paymentBreakdown?.refund ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -302,7 +302,7 @@ export default function ClientPortalPage() {
                 },
                 {
                   label: "Pending",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.paymentBreakdown?.pending ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -311,7 +311,7 @@ export default function ClientPortalPage() {
                 },
                 {
                   label: "Cancelled",
-                  value: `$${(
+                  value: `₱${(
                     dashboard.paymentBreakdown?.cancelled ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -322,7 +322,7 @@ export default function ClientPortalPage() {
                   ? [
                       {
                         label: "Avg/Order",
-                        value: `$${(
+                        value: `₱${(
                           dashboard.totalSpent / dashboard.totalOrders
                         ).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
@@ -335,7 +335,7 @@ export default function ClientPortalPage() {
             />
             <StatisticsCard
               title="Outstanding"
-              value={`$${dashboard.outstandingAmount.toLocaleString(undefined, {
+              value={`₱${dashboard.outstandingAmount.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}`}
@@ -400,7 +400,7 @@ export default function ClientPortalPage() {
                   <YAxis />
                   <Tooltip
                     formatter={(value) => [
-                      `$${Number(value).toLocaleString()}`,
+                      `₱${Number(value).toLocaleString()}`,
                       "Spent",
                     ]}
                   />
@@ -643,7 +643,7 @@ export default function ClientPortalPage() {
                                   )}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                  ${p.price.toFixed(2)}
+                                  ₱{p.price.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
                                   <ProductStatusBadge status={p.status} />
@@ -710,7 +710,7 @@ export default function ClientPortalPage() {
                               </p>
                             </TableCell>
                             <TableCell className="text-right">
-                              ${order.total.toFixed(2)}
+                              ₱{order.total.toFixed(2)}
                             </TableCell>
                             <TableCell>
                               {getOrderStatusBadge(order.status)}
@@ -779,11 +779,11 @@ export default function ClientPortalPage() {
                                 {invoice.invoiceNumber}
                               </Link>
                               <p className="text-xs text-muted-foreground">
-                                Total: ${invoice.total.toFixed(2)}
+                                Total: ₱{invoice.total.toFixed(2)}
                               </p>
                             </TableCell>
                             <TableCell className="text-right font-semibold">
-                              ${invoice.amountDue.toFixed(2)}
+                              ₱{invoice.amountDue.toFixed(2)}
                             </TableCell>
                             <TableCell>
                               {getInvoiceStatusBadge(invoice.status)}

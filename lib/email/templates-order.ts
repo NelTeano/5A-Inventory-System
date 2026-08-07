@@ -34,7 +34,7 @@ function generateUniqueSubject(baseSubject: string): string {
  * @returns string - Formatted currency string
  */
 function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  return `₱${amount.toFixed(2)}`;
 }
 
 /**

@@ -11,7 +11,7 @@ import {
   Package,
   FolderTree,
   Truck,
-  DollarSign,
+  PhilippinePeso,
   ShoppingCart,
   FileText,
   Warehouse,
@@ -77,7 +77,7 @@ export function StatisticsSection() {
             title="Total Value"
             value={formatCurrency(stats.totalInventoryValue ?? 0)}
             description="Total inventory value"
-            icon={DollarSign}
+            icon={PhilippinePeso}
             variant="violet"
             badges={[
               {
@@ -103,7 +103,7 @@ export function StatisticsSection() {
             title="Total Revenue"
             value={formatCurrency(revenueFromOrders)}
             description="Profits (excl. cancelled)"
-            icon={DollarSign}
+            icon={PhilippinePeso}
             variant="emerald"
             badges={[
               {

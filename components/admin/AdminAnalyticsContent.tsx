@@ -22,7 +22,7 @@ import {
   Warehouse,
   MessageSquare,
   Star,
-  DollarSign,
+  PhilippinePeso,
   BarChart3,
   TrendingUp,
   Sparkles,
@@ -45,7 +45,7 @@ import type { DashboardStats } from "@/types";
 import ForecastingSection from "@/components/admin/ForecastingSection";
 
 function formatCurrency(value: number): string {
-  return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export type AdminAnalyticsContentProps = {
@@ -83,12 +83,12 @@ export default function AdminAnalyticsContent({
       `Products: ${c.products ?? 0}. Users: ${c.users ?? 0}. Suppliers: ${c.suppliers ?? 0}. Categories: ${c.categories ?? 0}.`,
       `Orders: ${c.orders ?? 0}. Invoices: ${c.invoices ?? 0}. Warehouses: ${c.warehouses ?? 0}.`,
       `Support tickets: ${c.tickets ?? 0}. Product reviews: ${c.reviews ?? 0}.`,
-      `Total revenue (orders + invoices): $${totalRev.toLocaleString()}.`,
+      `Total revenue (orders + invoices): ₱${totalRev.toLocaleString()}.`,
     ];
     const last = stats.trends?.[stats.trends.length - 1];
     if (last) {
       parts.push(
-        `Last month trend: ${last.orders} orders, $${last.revenue.toLocaleString()} revenue, ${last.products} new products, ${last.invoices} invoices.`,
+        `Last month trend: ${last.orders} orders, ₱${last.revenue.toLocaleString()} revenue, ${last.products} new products, ${last.invoices} invoices.`,
       );
     }
     return parts.join(" ");
@@ -200,7 +200,7 @@ export default function AdminAnalyticsContent({
                 title="Total Value"
                 value={formatCurrency(stats.totalInventoryValue ?? 0)}
                 description="Total inventory value"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="violet"
                 badges={[
                   {
@@ -233,7 +233,7 @@ export default function AdminAnalyticsContent({
                 title="Total Revenue"
                 value={formatCurrency(revenueFromOrders)}
                 description="Profits (excl. cancelled)"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="emerald"
                 badges={[
                   {
@@ -456,7 +456,7 @@ export default function AdminAnalyticsContent({
                   stats.orderAnalytics?.averageOrderValue ?? 0,
                 )}
                 description="Per order (store-wide)"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="sky"
                 badges={[
                   {
@@ -507,7 +507,7 @@ export default function AdminAnalyticsContent({
                     orientation="right"
                     tick={{ fontSize: 12 }}
                     className="text-muted-foreground"
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                    tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -517,7 +517,7 @@ export default function AdminAnalyticsContent({
                     }}
                     formatter={(value, name) => [
                       name === "revenue"
-                        ? `$${Number(value ?? 0).toLocaleString()}`
+                        ? `₱${Number(value ?? 0).toLocaleString()}`
                         : (value ?? 0),
                       name === "revenue"
                         ? "Order revenue (excl. cancelled)"
@@ -607,7 +607,7 @@ export default function AdminAnalyticsContent({
                 title="Average Order Value"
                 value={formatCurrency(stats.orderAnalytics.averageOrderValue)}
                 description="Per order (incl. cancelled)"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="emerald"
                 badges={[
                   { label: "Orders", value: stats.counts?.orders },
@@ -642,7 +642,7 @@ export default function AdminAnalyticsContent({
                     stats.orderAnalytics.totalRevenue,
                 )}
                 description="Profits (excl. cancelled)"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="sky"
                 badges={[
                   {
@@ -844,7 +844,7 @@ export default function AdminAnalyticsContent({
                                 {p.totalQuantity}
                               </td>
                               <td className="py-2 text-right">
-                                ${p.totalRevenue.toLocaleString()}
+                                ₱{Number(p.totalRevenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </td>
                             </tr>
                           ))}
@@ -875,7 +875,7 @@ export default function AdminAnalyticsContent({
                     stats.invoiceAnalytics.averageInvoiceValue,
                 )}
                 description="Per invoice (excl. cancelled)"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="amber"
                 badges={[
                   { label: "Invoices", value: stats.counts?.invoices },
@@ -903,7 +903,7 @@ export default function AdminAnalyticsContent({
                 title="Paid Revenue"
                 value={formatCurrency(stats.invoiceAnalytics.paidRevenue)}
                 description="Collected"
-                icon={DollarSign}
+                icon={PhilippinePeso}
                 variant="emerald"
                 badges={[
                   {
@@ -1209,7 +1209,7 @@ export default function AdminAnalyticsContent({
                         >
                           <span className="truncate">{o.orderNumber}</span>
                           <span className="text-muted-foreground shrink-0">
-                            ${o.total.toLocaleString()}
+                            ₱{Number(o.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </Link>
                         <p className="text-xs text-muted-foreground">

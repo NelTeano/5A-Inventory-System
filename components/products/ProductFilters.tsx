@@ -125,7 +125,7 @@ export default function FiltersAndActions({
       const csvData = filteredProducts.map((product) => ({
         "Product Name": product.name,
         SKU: product.sku,
-        Price: `$${product.price.toFixed(2)}`,
+        Price: `₱${product.price.toFixed(2)}`,
         Quantity: product.quantity,
         Status: product.status,
         Category: product.category || "Unknown",

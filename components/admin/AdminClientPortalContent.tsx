@@ -15,7 +15,7 @@ import {
   Users,
   ShoppingCart,
   FileText,
-  DollarSign,
+  PhilippinePeso,
   ArrowRight,
   Loader2,
 } from "lucide-react";
@@ -202,8 +202,8 @@ export default function AdminClientPortalContent({
               />
               <AnalyticsCard
                 title="Revenue"
-                value={`$${((stats.revenue?.orders ?? 0) + (stats.revenue?.invoices ?? 0)).toLocaleString()}`}
-                icon={DollarSign}
+                value={`₱${((stats.revenue?.orders ?? 0) + (stats.revenue?.invoices ?? 0)).toLocaleString()}`}
+                icon={PhilippinePeso}
                 description="Orders + Invoices"
                 variant="amber"
               />
@@ -266,7 +266,7 @@ export default function AdminClientPortalContent({
                         {o.status}
                       </Badge>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        ${o.total.toLocaleString()}
+                        ₱{Number(o.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                   </li>
