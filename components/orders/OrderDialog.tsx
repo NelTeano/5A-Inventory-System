@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ProductSearchCombobox } from "@/components/orders/ProductSearchCombobox";
 import {
   useForm,
   FormProvider,
@@ -1012,7 +1013,7 @@ export default function OrderDialog({
                               <Label className="text-white/80 text-sm">
                                 Product {index + 1}
                               </Label>
-                              <Select
+                              <ProductSearchCombobox
                                 value={productId || ""}
                                 onValueChange={(value) => {
                                   createSetValue(
@@ -1022,44 +1023,18 @@ export default function OrderDialog({
                                   // Reset quantity to 1 when product changes
                                   createSetValue(`items.${index}.quantity`, 1);
                                 }}
+                                products={availableProducts}
+                                placeholder={productSelectPlaceholder}
                                 disabled={
                                   isClientCreatingOrder &&
                                   availableProducts.length === 0
                                 }
-                              >
-                                <SelectTrigger className="h-11 w-full border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:ring-violet-500/50 shadow-[0_10px_30px_rgba(139,92,246,0.15)]">
-                                  <SelectValue
-                                    placeholder={productSelectPlaceholder}
-                                  />
-                                </SelectTrigger>
-                                <SelectContent
-                                  className="border-violet-400/20 dark:border-white/10 bg-white/80 dark:bg-popover/50 backdrop-blur-sm z-[100]"
-                                  position="popper"
-                                  sideOffset={5}
-                                  align="start"
-                                >
-                                  {availableProducts.length === 0 &&
-                                  isClientCreatingOrder &&
-                                  productOwner ? (
-                                    <div className="px-2 py-3 text-sm text-muted-foreground dark:text-white/60 text-center">
-                                      {productOwner.name} hasn&apos;t added any
-                                      products yet
-                                    </div>
-                                  ) : (
-                                    availableProducts.map((product) => (
-                                      <SelectItem
-                                        key={product.id}
-                                        value={product.id}
-                                        className="cursor-pointer text-gray-900 dark:text-white focus:bg-violet-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white"
-                                      >
-                                        {product.sku} - {product.name} - ₱
-                                        {Number(product.price).toFixed(2)}{" "}
-                                        (Stock: {product.quantity})
-                                      </SelectItem>
-                                    ))
-                                  )}
-                                </SelectContent>
-                              </Select>
+                                emptyMessage={
+                                  isClientCreatingOrder && productOwner
+                                    ? `${productOwner.name} hasn't added any products yet`
+                                    : undefined
+                                }
+                              />
                               {createErrors.items?.[index]?.productId && (
                                 <p className="text-red-500 text-xs">
                                   {String(
