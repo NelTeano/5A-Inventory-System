@@ -1052,7 +1052,7 @@ export default function OrderDialog({
                                         value={product.id}
                                         className="cursor-pointer text-gray-900 dark:text-white focus:bg-violet-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white"
                                       >
-                                        {product.name} - ₱
+                                        {product.sku} - {product.name} - ₱
                                         {Number(product.price).toFixed(2)}{" "}
                                         (Stock: {product.quantity})
                                       </SelectItem>
