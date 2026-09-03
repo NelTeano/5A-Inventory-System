@@ -26,8 +26,10 @@ import {
 } from "@/hooks/queries";
 import OrderFilters from "./OrderFilters";
 import OrderDialog from "./OrderDialog";
+import { OrderMonthlyReportDialog } from "./OrderMonthlyReportDialog";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/home/StatisticsCardSkeleton";
+import { Button } from "@/components/ui/button";
 import {
   PhilippinePeso,
   CreditCard,
@@ -35,6 +37,7 @@ import {
   FileText,
   Clock,
   Package,
+  FileBarChart,
 } from "lucide-react";
 import type { Order } from "@/types";
 import type { OrderWithSource } from "./OrderTableColumns";
@@ -175,6 +178,8 @@ const OrderList = React.memo(
     // State for controlling edit dialog
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+    // State for monthly order report dialog
+    const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
     // Create table columns with edit handler
     const handleEditOrder = useCallback((order: Order) => {
@@ -300,6 +305,16 @@ const OrderList = React.memo(
                         ordersPageStats.orderAnalytics?.cancelledOrderAmount ??
                           0,
                       ),
+                    },
+                  ]}
+                  expandableSections={[
+                    {
+                      title: `Breakdown by supplier (${ordersPageStats.supplierValues?.length ?? 0})`,
+                      items:
+                        ordersPageStats.supplierValues?.map((sv) => ({
+                          label: sv.supplierName,
+                          value: formatCurrency(sv.value),
+                        })) ?? [],
                     },
                   ]}
                 />
@@ -922,6 +937,16 @@ const OrderList = React.memo(
                       ),
                     },
                   ]}
+                  expandableSections={[
+                    {
+                      title: `Breakdown by supplier (${dashboard.supplierValues?.length ?? 0})`,
+                      items:
+                        dashboard.supplierValues?.map((sv) => ({
+                          label: sv.supplierName,
+                          value: formatCurrency(sv.value),
+                        })) ?? [],
+                    },
+                  ]}
                 />
                 <StatisticsCard
                   title="Invoices"
@@ -985,6 +1010,23 @@ const OrderList = React.memo(
           </div>
         </div>
 
+        {/* Generate Report — admin/user store-wide view only */}
+        {isUserOrdersPage && isMounted && (
+          <div className="pb-6 flex justify-center">
+            <div className="w-full max-w-9xl flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setReportDialogOpen(true)}
+                disabled={(allOrders?.length ?? 0) === 0}
+                className="h-10 flex items-center gap-2 rounded-[28px] border border-amber-400/30 dark:border-amber-400/30 bg-gradient-to-r from-amber-500/25 via-amber-500/15 to-amber-500/10 dark:from-amber-500/25 dark:via-amber-500/15 dark:to-amber-500/10 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(245,158,11,0.2)] backdrop-blur-sm transition duration-200 hover:border-amber-300/40 hover:from-amber-500/35 hover:via-amber-500/25 hover:to-amber-500/15 dark:hover:border-amber-300/40 dark:hover:from-amber-500/35 dark:hover:via-amber-500/25 dark:hover:to-amber-500/15 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FileBarChart className="h-4 w-4" />
+                Generate Report
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Order Table - Shows skeleton during auth check or data loading */}
         <OrderTable
           data={allOrders || []}
@@ -1014,6 +1056,15 @@ const OrderList = React.memo(
           >
             <div style={{ display: "none" }} />
           </OrderDialog>
+        )}
+
+        {/* Monthly order report dialog — admin/user store-wide view only */}
+        {isMounted && isUserOrdersPage && (
+          <OrderMonthlyReportDialog
+            open={reportDialogOpen}
+            onOpenChange={setReportDialogOpen}
+            orders={allOrders || []}
+          />
         )}
       </div>
     );

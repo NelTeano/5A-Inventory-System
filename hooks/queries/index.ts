@@ -10,6 +10,7 @@ export {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
+  useBulkDeleteProducts,
 } from "./use-products";
 
 // Category hooks
@@ -54,6 +55,16 @@ export {
   useUpdateOrder,
   useDeleteOrder,
 } from "./use-orders";
+
+// Repair Order hooks
+export {
+  useRepairOrders,
+  useRepairOrder,
+  useCreateRepairOrder,
+  useDeleteRepairOrder,
+  useBulkDeleteRepairOrders,
+  repairOrderKeys,
+} from "./use-repair-orders";
 
 // Notification hooks
 export {

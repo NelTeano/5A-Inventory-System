@@ -49,6 +49,12 @@ interface DataTableProps<TData, TValue> {
   selectedCategory: string[];
   selectedStatuses: string[];
   selectedSuppliers: string[];
+  /** Row selection state for bulk operations */
+  rowSelection?: Record<string, boolean>;
+  /** Row selection change handler */
+  onRowSelectionChange?: (
+    updater: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>),
+  ) => void;
 }
 
 // Function to return color based on status
@@ -90,6 +96,8 @@ export const ProductTable = React.memo(function ProductTable({
   selectedCategory,
   selectedStatuses,
   selectedSuppliers,
+  rowSelection = {},
+  onRowSelectionChange,
 }: DataTableProps<Product, unknown>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -125,9 +133,12 @@ export const ProductTable = React.memo(function ProductTable({
     state: {
       pagination,
       sorting,
+      rowSelection,
     },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
+    onRowSelectionChange: onRowSelectionChange,
+    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),

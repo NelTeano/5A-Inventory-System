@@ -127,7 +127,7 @@ model Product {
   price            Float
   quantity         BigInt
   reservedQuantity BigInt      @default(0) // Stock reserved by pending orders (not yet confirmed)
-  sku              String      @unique
+   sku              String
   status           String
   supplierId       String      @db.ObjectId
   userId           String      @db.ObjectId // Created by user ID
@@ -139,6 +139,9 @@ model Product {
   imageFileId      String? // ImageKit file ID for cleanup when updating/deleting
   expirationDate   DateTime?   @db.Date // Product expiration date (optional, for perishable items)
   orderItems       OrderItem[] // Orders containing this product (one-to-many relationship)
+  repairOrderItems RepairOrderItem[] // Repair orders containing this product (one-to-many)
+
+  @@unique([userId, sku]) // SKU unique per user, not globally
 }
 
 model Session {
@@ -374,4 +377,38 @@ model AuditLog {
   @@index([action])
   @@index([entityType])
   @@index([createdAt])
+}
+
+// Repair Order - for tracking materials used in repairs (does not affect product stock)
+model RepairOrder {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  repairOrderNumber String   @unique // Unique repair order number (e.g., RO-2024-001)
+  technicianName    String   // Name of technician performing repair
+  customerName      String   // Name of customer for whom repair is done
+  notes             String?  // Optional repair notes
+  createdAt         DateTime @default(now()) @db.Date
+  updatedAt         DateTime? @db.Date // Manually managed
+  createdBy         String   @db.ObjectId // Admin who created this repair order
+  items             RepairOrderItem[] // Materials used in repair
+
+  @@index([createdBy])
+  @@index([createdAt])
+  @@index([technicianName])
+}
+
+model RepairOrderItem {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  repairOrderId  String   @db.ObjectId
+  productId      String   @db.ObjectId
+  productName    String   // Product name snapshot at time of repair order
+  sku            String?  // Product SKU snapshot
+  quantity       Int      // Quantity of material used
+  price          Float    // Unit price snapshotted from Product.price
+  subtotal       Float    // quantity * price
+  createdAt      DateTime @default(now()) @db.Date
+  repairOrder    RepairOrder @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
+  product        Product     @relation(fields: [productId], references: [id])
+
+  @@index([repairOrderId])
+  @@index([productId])
 }

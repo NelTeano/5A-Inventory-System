@@ -32,6 +32,14 @@ interface BadgeData {
 }
 
 /**
+ * Expandable section data (e.g. per-category value breakdown)
+ */
+interface ExpandableSection {
+  title: string;
+  items: { label: string; value: string | number }[];
+}
+
+/**
  * Props for StatisticsCard component
  */
 interface StatisticsCardProps {
@@ -59,6 +67,10 @@ interface StatisticsCardProps {
    * Array of badges to display below the value
    */
   badges?: BadgeData[];
+  /**
+   * Optional collapsible sections displayed inside the card (e.g. category breakdown)
+   */
+  expandableSections?: ExpandableSection[];
   /**
    * Optional className for additional styling
    */
@@ -153,6 +165,7 @@ export function StatisticsCard({
   icon: Icon,
   variant = "sky",
   badges = [],
+  expandableSections = [],
   className,
 }: StatisticsCardProps) {
   const config = variantConfig[variant];
@@ -197,6 +210,34 @@ export function StatisticsCard({
                 <span className="font-medium">{badge.label}:</span>{" "}
                 <span className="ml-1">{badge.value}</span>
               </Badge>
+            ))}
+          </div>
+        )}
+        {expandableSections.length > 0 && (
+          <div className="mt-3 w-full min-w-0 space-y-2">
+            {expandableSections.map((section, sectionIndex) => (
+              <details
+                key={sectionIndex}
+                className="group w-full rounded-2xl border border-gray-300/40 bg-gray-100/70 dark:border-white/10 dark:bg-white/5"
+              >
+                <summary className="flex w-full cursor-pointer list-none items-center justify-between gap-2 rounded-2xl px-3 py-2 text-xs font-medium text-gray-700 dark:text-white/80 transition hover:bg-gray-200/70 dark:hover:bg-white/10 [&::-webkit-details-marker]:hidden">
+                  <span>{section.title}</span>
+                  <span className="text-gray-500 dark:text-white/50 transition-transform group-open:rotate-180">
+                    ▾
+                  </span>
+                </summary>
+                <div className="flex max-h-48 w-full flex-col gap-1 overflow-y-auto border-t border-gray-200/60 px-3 py-2 dark:border-white/10">
+                  {section.items.map((item, itemIndex) => (
+                    <div
+                      key={itemIndex}
+                      className="flex items-center justify-between gap-2 text-xs text-gray-700 dark:text-white/80"
+                    >
+                      <span className="truncate font-medium">{item.label}</span>
+                      <span className="shrink-0">{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </details>
             ))}
           </div>
         )}

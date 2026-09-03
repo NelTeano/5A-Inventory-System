@@ -58,6 +58,16 @@ export type {
   OrderFilters,
 } from "./order";
 
+// Repair Order types
+export type {
+  RepairOrder,
+  RepairOrderItem,
+  CreateRepairOrderInput,
+  RepairOrderFilters,
+  RepairOrderReportRow,
+  RepairOrderReportSummary,
+} from "./repair-order";
+
 // Notification types
 export type {
   Notification,
@@ -128,6 +138,8 @@ export type {
   DashboardUserRoleBreakdown,
   DashboardSupplierStatusBreakdown,
   DashboardCategoryStatusBreakdown,
+  DashboardCategoryValue,
+  DashboardSupplierValue,
   DashboardTicketStatusBreakdown,
   DashboardReviewStatusBreakdown,
   DashboardSelfOthersBreakdown,

@@ -61,12 +61,14 @@ export function ProductSearchCombobox({
 
   const filteredProducts = React.useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return products;
-    return products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(query) ||
-        product.sku.toLowerCase().includes(query),
-    );
+    const filtered = !query
+      ? products
+      : products.filter(
+          (product) =>
+            product.name.toLowerCase().includes(query) ||
+            product.sku.toLowerCase().includes(query),
+        );
+    return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
   }, [products, search]);
 
   return (

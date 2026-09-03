@@ -29,6 +29,8 @@ import type {
   DashboardUserRoleBreakdown,
   DashboardSupplierStatusBreakdown,
   DashboardCategoryStatusBreakdown,
+  DashboardCategoryValue,
+  DashboardSupplierValue,
   DashboardTicketStatusBreakdown,
   DashboardReviewStatusBreakdown,
   DashboardSelfOthersBreakdown,
@@ -314,6 +316,8 @@ export async function getDashboardForAdmin(userId: string): Promise<DashboardSta
     supplierInactiveCount,
     categoryActiveCount,
     categoryInactiveCount,
+    dashboardCategories,
+    dashboardSuppliers,
     ticketStatusGroups,
     reviewStatusGroups,
   ] = await Promise.all([
@@ -321,12 +325,26 @@ export async function getDashboardForAdmin(userId: string): Promise<DashboardSta
     prisma.user.groupBy({ by: ["role"], _count: { id: true } }),
     prisma.product.findMany({
       where: whereUser,
-      select: { status: true, price: true, quantity: true },
+      select: {
+        status: true,
+        price: true,
+        quantity: true,
+        categoryId: true,
+        supplierId: true,
+      },
     }),
     prisma.supplier.count({ where: { ...whereSuppliers, status: true } }),
     prisma.supplier.count({ where: { ...whereSuppliers, status: false } }),
     prisma.category.count({ where: { ...whereUser, status: true } }),
     prisma.category.count({ where: { ...whereUser, status: false } }),
+    prisma.category.findMany({
+      where: whereUser,
+      select: { id: true, name: true },
+    }),
+    prisma.supplier.findMany({
+      where: whereSuppliers,
+      select: { id: true, name: true },
+    }),
     prisma.supportTicket.groupBy({
       by: ["status"],
       where: { assignedToId: userId },
@@ -345,13 +363,54 @@ export async function getDashboardForAdmin(userId: string): Promise<DashboardSta
     stockOut: 0,
   };
   let totalInventoryValue = 0;
+  const valueByCategory = new Map<string, number>();
+  const valueBySupplier = new Map<string, number>();
   for (const p of productsForBreakdown) {
     const status = (p.status || "").toLowerCase().replace(/\s+/g, "_");
     if (status === "available") productStatusBreakdown.available += 1;
     else if (status === "stock_low") productStatusBreakdown.stockLow += 1;
     else if (status === "stock_out") productStatusBreakdown.stockOut += 1;
-    totalInventoryValue += Number(p.price ?? 0) * Number(p.quantity ?? 0);
+    const productValue = Number(p.price ?? 0) * Number(p.quantity ?? 0);
+    totalInventoryValue += productValue;
+    if (p.categoryId) {
+      valueByCategory.set(
+        p.categoryId,
+        (valueByCategory.get(p.categoryId) ?? 0) + productValue,
+      );
+    }
+    if (p.supplierId) {
+      valueBySupplier.set(
+        p.supplierId,
+        (valueBySupplier.get(p.supplierId) ?? 0) + productValue,
+      );
+    }
   }
+
+  const categoryNameMap = new Map(
+    dashboardCategories.map((c) => [c.id, c.name]),
+  );
+  const categoryValues: DashboardCategoryValue[] = Array.from(
+    valueByCategory.entries(),
+  )
+    .map(([categoryId, value]) => ({
+      categoryId,
+      categoryName: categoryNameMap.get(categoryId) ?? "Unknown",
+      value,
+    }))
+    .sort((a, b) => b.value - a.value);
+
+  const supplierNameMap = new Map(
+    dashboardSuppliers.map((s) => [s.id, s.name]),
+  );
+  const supplierValues: DashboardSupplierValue[] = Array.from(
+    valueBySupplier.entries(),
+  )
+    .map(([supplierId, value]) => ({
+      supplierId,
+      supplierName: supplierNameMap.get(supplierId) ?? "Unknown",
+      value,
+    }))
+    .sort((a, b) => b.value - a.value);
 
   const userRoleBreakdown: DashboardUserRoleBreakdown = {
     admin: 0,
@@ -644,6 +703,8 @@ export async function getDashboardForAdmin(userId: string): Promise<DashboardSta
     invoiceAnalytics,
     warehouseAnalytics,
     totalInventoryValue,
+    categoryValues,
+    supplierValues,
     productStatusBreakdown,
     userRoleBreakdown,
     supplierStatusBreakdown,

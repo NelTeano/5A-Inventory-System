@@ -196,6 +196,16 @@ const CategoryList = React.memo(() => {
                     ),
                   },
                 ]}
+                expandableSections={[
+                  {
+                    title: `Breakdown by supplier (${categoriesPageStats.supplierValues?.length ?? 0})`,
+                    items:
+                      categoriesPageStats.supplierValues?.map((sv) => ({
+                        label: sv.supplierName,
+                        value: formatCurrency(sv.value),
+                      })) ?? [],
+                  },
+                ]}
               />
               <StatisticsCard
                 title="Total Suppliers"
