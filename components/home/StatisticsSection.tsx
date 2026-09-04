@@ -98,6 +98,16 @@ export function StatisticsSection() {
                 value: formatCurrency(stats.orderAnalytics?.cancelledOrderAmount ?? 0),
               },
             ]}
+            expandableSections={[
+              {
+                title: `Breakdown by supplier (${stats.supplierValues?.length ?? 0})`,
+                items:
+                  stats.supplierValues?.map((sv) => ({
+                    label: sv.supplierName,
+                    value: formatCurrency(sv.value),
+                  })) ?? [],
+              },
+            ]}
           />
           <StatisticsCard
             title="Total Revenue"

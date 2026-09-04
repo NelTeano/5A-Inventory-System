@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { PaginationType } from "@/components/shared/PaginationSelector";
@@ -13,6 +13,7 @@ import {
   useOrders,
   useDashboard,
   useSupplierPortalDashboard,
+  useBulkDeleteProducts,
 } from "@/hooks/queries";
 import ProductFilters from "./ProductFilters";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
@@ -20,7 +21,8 @@ import { StatisticsCardSkeleton } from "@/components/home/StatisticsCardSkeleton
 import { AnalyticsCard } from "@/components/ui/analytics-card";
 import { AnalyticsCardSkeleton } from "@/components/ui/analytics-card-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Package, PhilippinePeso, Truck, FolderTree } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Package, PhilippinePeso, Truck, FolderTree, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ProductTable = dynamic(
@@ -72,13 +74,6 @@ const ProductList = React.memo(() => {
   /** Supplier on /products: show Product Owner column instead of Supplier, and supplier header */
   const isSupplierProductsPage =
     pathname === "/products" && user?.role === "supplier";
-  const columns = useMemo(
-    () =>
-      createProductColumns(detailBase, {
-        forSupplier: isSupplierProductsPage,
-      }),
-    [detailBase, isSupplierProductsPage],
-  );
 
   // Mark component as mounted after client-side hydration
   useEffect(() => {
@@ -99,6 +94,111 @@ const ProductList = React.memo(() => {
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
+
+  // Row selection state for bulk operations
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const bulkDeleteMutation = useBulkDeleteProducts();
+
+  // Selection helpers
+  const selectedRows = useMemo(
+    () => new Set(Object.keys(rowSelection).filter((k) => rowSelection[k])),
+    [rowSelection],
+  );
+
+  // Filtered product IDs for select-all
+  const filteredProductIds = useMemo(() => {
+    return allProducts
+      .filter((product) => {
+        const searchMatch =
+          !searchTerm ||
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.sku.toLowerCase().includes(searchTerm.toLowerCase());
+        const categoryMatch =
+          selectedCategory.length === 0 ||
+          selectedCategory.includes(product.categoryId ?? "");
+        const supplierMatch =
+          selectedSuppliers.length === 0 ||
+          selectedSuppliers.includes(product.supplierId ?? "");
+        const statusMatch =
+          selectedStatuses.length === 0 ||
+          selectedStatuses.includes(product.status ?? "");
+        return searchMatch && categoryMatch && supplierMatch && statusMatch;
+      })
+      .map((p) => p.id);
+  }, [allProducts, searchTerm, selectedCategory, selectedSuppliers, selectedStatuses]);
+
+  const allSelected =
+    filteredProductIds.length > 0 &&
+    filteredProductIds.every((id) => selectedRows.has(id));
+  const someSelected =
+    selectedRows.size > 0 &&
+    !allSelected &&
+    filteredProductIds.some((id) => selectedRows.has(id));
+
+  const toggleRowSelection = useCallback((id: string) => {
+    setRowSelection((prev) => {
+      const next = { ...prev };
+      if (next[id]) {
+        delete next[id];
+      } else {
+        next[id] = true;
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleAllRows = useCallback(() => {
+    setRowSelection((prev) => {
+      if (filteredProductIds.every((id) => prev[id])) {
+        // Deselect all filtered rows
+        const next = { ...prev };
+        for (const id of filteredProductIds) {
+          delete next[id];
+        }
+        return next;
+      }
+      // Select all filtered rows
+      const next = { ...prev };
+      for (const id of filteredProductIds) {
+        next[id] = true;
+      }
+      return next;
+    });
+  }, [filteredProductIds]);
+
+  const handleBulkDelete = useCallback(async () => {
+    const ids = Array.from(selectedRows);
+    if (
+      !confirm(
+        `Are you sure you want to delete ${ids.length} product(s)?`,
+      )
+    ) {
+      return;
+    }
+    await bulkDeleteMutation.mutateAsync(ids);
+    setRowSelection({});
+  }, [selectedRows, bulkDeleteMutation]);
+
+  const columns = useMemo(
+    () =>
+      createProductColumns(detailBase, {
+        forSupplier: isSupplierProductsPage,
+        selectedRows,
+        onToggleRow: toggleRowSelection,
+        onToggleAll: toggleAllRows,
+        allSelected,
+        someSelected,
+      }),
+    [
+      detailBase,
+      isSupplierProductsPage,
+      selectedRows,
+      toggleRowSelection,
+      toggleAllRows,
+      allSelected,
+      someSelected,
+    ],
+  );
 
   // Removed debug log - use React DevTools for debugging
 
@@ -425,6 +525,16 @@ const ProductList = React.memo(() => {
                     ),
                   },
                 ]}
+                expandableSections={[
+                  {
+                    title: `Breakdown by supplier (${dashboard.supplierValues?.length ?? 0})`,
+                    items:
+                      dashboard.supplierValues?.map((sv) => ({
+                        label: sv.supplierName,
+                        value: formatCurrency(sv.value),
+                      })) ?? [],
+                  },
+                ]}
               />
               <StatisticsCard
                 title="Total Suppliers"
@@ -539,6 +649,16 @@ const ProductList = React.memo(() => {
                     ),
                   },
                 ]}
+                expandableSections={[
+                  {
+                    title: `Breakdown by supplier (${productsPageStats.supplierValues?.length ?? 0})`,
+                    items:
+                      productsPageStats.supplierValues?.map((sv) => ({
+                        label: sv.supplierName,
+                        value: formatCurrency(sv.value),
+                      })) ?? [],
+                  },
+                ]}
               />
               <StatisticsCard
                 title="Total Suppliers"
@@ -585,7 +705,7 @@ const ProductList = React.memo(() => {
 
       {/* Filters and Actions - Always visible, only disabled during auth check */}
       <div className="pb-6 flex justify-center">
-        <div className="w-full max-w-9xl">
+        <div className="w-full max-w-9xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <ProductFilters
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -602,6 +722,19 @@ const ProductList = React.memo(() => {
             setSelectedSuppliers={setSelectedSuppliers}
             userId={user?.id || ""}
           />
+
+          {/* Bulk Delete Button */}
+          {selectedRows.size > 0 && (
+            <Button
+              variant="destructive"
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              className="h-10 flex items-center gap-2 rounded-[28px]"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Selected ({selectedRows.size})
+            </Button>
+          )}
         </div>
       </div>
       {/* Product Table - Shows skeleton during auth check or data loading */}
@@ -616,6 +749,8 @@ const ProductList = React.memo(() => {
         selectedCategory={selectedCategory}
         selectedStatuses={selectedStatuses}
         selectedSuppliers={selectedSuppliers}
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
       />
     </div>
   );

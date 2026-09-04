@@ -7,6 +7,7 @@ import { Column, ColumnDef } from "@tanstack/react-table";
 //import { ReactNode } from "react";
 
 import ProductDropDown from "./ProductActions";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   DropdownMenu,
@@ -70,6 +71,16 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
 export type CreateProductColumnsOptions = {
   /** When true, show Product Owner column instead of Supplier (for supplier role on /products) */
   forSupplier?: boolean;
+  /** Row selection state for bulk operations */
+  selectedRows?: Set<string>;
+  /** Toggle a single row selection */
+  onToggleRow?: (id: string) => void;
+  /** Toggle all rows */
+  onToggleAll?: () => void;
+  /** Whether all rows are selected */
+  allSelected?: boolean;
+  /** Whether some (but not all) rows are selected */
+  someSelected?: boolean;
 };
 
 export function createProductColumns(
@@ -77,7 +88,40 @@ export function createProductColumns(
   options?: CreateProductColumnsOptions,
 ): ColumnDef<Product>[] {
   const forSupplier = options?.forSupplier === true;
+  const hasSelection = !!options?.onToggleRow;
+
+  const checkboxColumn: ColumnDef<Product>[] = hasSelection
+    ? [
+        {
+          id: "select",
+          header: () => (
+            <Checkbox
+              checked={
+                options?.allSelected
+                  ? true
+                  : options?.someSelected
+                    ? "indeterminate"
+                    : false
+              }
+              onCheckedChange={() => options?.onToggleAll?.()}
+              aria-label="Select all"
+            />
+          ),
+          cell: ({ row }) => (
+            <Checkbox
+              checked={options?.selectedRows?.has(row.original.id) ?? false}
+              onCheckedChange={() => options?.onToggleRow?.(row.original.id)}
+              aria-label={`Select ${row.original.name}`}
+            />
+          ),
+          enableSorting: false,
+          enableHiding: false,
+        },
+      ]
+    : [];
+
   return [
+  ...checkboxColumn,
   {
     id: "image",
     header: "Image",

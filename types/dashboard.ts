@@ -180,6 +180,20 @@ export interface DashboardCategoryStatusBreakdown {
   inactive: number;
 }
 
+/** Per-category inventory value (sum of price*quantity for owner's products) */
+export interface DashboardCategoryValue {
+  categoryId: string;
+  categoryName: string;
+  value: number;
+}
+
+/** Per-supplier inventory value (sum of price*quantity for owner's products) */
+export interface DashboardSupplierValue {
+  supplierId: string;
+  supplierName: string;
+  value: number;
+}
+
 /** Support ticket status counts (tickets assigned to this admin) */
 export interface DashboardTicketStatusBreakdown {
   open: number;
@@ -221,6 +235,10 @@ export interface DashboardStats {
   warehouseAnalytics: DashboardWarehouseAnalytics;
   /** Total inventory value (sum of price*quantity for owner's products) */
   totalInventoryValue?: number;
+  /** Total inventory value broken down by category (owner's products) */
+  categoryValues?: DashboardCategoryValue[];
+  /** Total inventory value broken down by supplier (owner's products) */
+  supplierValues?: DashboardSupplierValue[];
   productStatusBreakdown?: DashboardProductStatusBreakdown;
   userRoleBreakdown?: DashboardUserRoleBreakdown;
   supplierStatusBreakdown?: DashboardSupplierStatusBreakdown;

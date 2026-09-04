@@ -82,6 +82,8 @@ import type {
   AuditLog,
   AuditLogFilters,
   AdminCounts,
+  RepairOrder,
+  CreateRepairOrderInput,
 } from "@/types";
 
 /**
@@ -292,6 +294,28 @@ class ApiClient {
       const response = await this.client.delete<void>(
         `${API_ENDPOINTS.products.base}?id=${id}`,
       );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /**
+     * Bulk delete products
+     */
+    bulkDelete: async (
+      ids: string[],
+    ): Promise<
+      ApiResponse<{
+        deletedCount: number;
+        skippedProducts: Array<{ id: string; name: string; reason: string }>;
+      }>
+    > => {
+      const response = await this.client.post<{
+        deletedCount: number;
+        skippedProducts: Array<{ id: string; name: string; reason: string }>;
+      }>(API_ENDPOINTS.products.bulkDelete, { ids });
       return {
         data: response.data,
         status: response.status,
@@ -1280,6 +1304,84 @@ class ApiClient {
     delete: async (id: string): Promise<ApiResponse<Order>> => {
       const response = await this.client.delete<Order>(
         `${API_ENDPOINTS.orders.base}/${id}`,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+  };
+
+  /**
+   * Repair Orders API methods
+   * Note: Repair orders do NOT affect product stock
+   */
+  repairOrders = {
+    /**
+     * Get all repair orders
+     */
+    getAll: async (): Promise<ApiResponse<RepairOrder[]>> => {
+      const response = await this.client.get<RepairOrder[]>(
+        API_ENDPOINTS.repairOrders.base,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /**
+     * Get repair order by ID
+     */
+    getById: async (id: string): Promise<ApiResponse<RepairOrder>> => {
+      const response = await this.client.get<RepairOrder>(
+        `${API_ENDPOINTS.repairOrders.base}/${id}`,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /**
+     * Create new repair order
+     */
+    create: async (data: CreateRepairOrderInput): Promise<ApiResponse<RepairOrder>> => {
+      const response = await this.client.post<RepairOrder>(
+        API_ENDPOINTS.repairOrders.base,
+        data,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /**
+     * Delete repair order
+     */
+    delete: async (id: string): Promise<ApiResponse<void>> => {
+      const response = await this.client.delete<void>(
+        `${API_ENDPOINTS.repairOrders.base}/${id}`,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /**
+     * Bulk delete repair orders
+     */
+    bulkDelete: async (ids: string[]): Promise<ApiResponse<{ deletedCount: number }>> => {
+      const response = await this.client.post<{ deletedCount: number }>(
+        API_ENDPOINTS.repairOrders.bulkDelete,
+        { ids },
       );
       return {
         data: response.data,

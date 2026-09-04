@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   // Product endpoints
   products: {
     base: "/products",
+    bulkDelete: "/products/bulk-delete",
   },
 
   // Category endpoints
@@ -44,6 +45,12 @@ export const API_ENDPOINTS = {
   // Order endpoints
   orders: {
     base: "/orders",
+  },
+
+  // Repair Order endpoints
+  repairOrders: {
+    base: "/repair-orders",
+    bulkDelete: "/repair-orders/bulk-delete",
   },
 
   // Admin: client orders/invoices and sidebar counts

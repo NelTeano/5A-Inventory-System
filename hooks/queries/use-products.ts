@@ -162,3 +162,50 @@ export function useDeleteProduct() {
   });
 }
 
+/**
+ * Bulk delete products mutation
+ * Mutation hook for deleting multiple products at once
+ */
+export function useBulkDeleteProducts() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const response = await apiClient.products.bulkDelete(ids);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      invalidateAllRelatedQueries(queryClient);
+
+      const { deletedCount, skippedProducts } = data;
+
+      if (skippedProducts.length === 0) {
+        toast({
+          title: "Success",
+          description: `${deletedCount} product(s) deleted successfully`,
+        });
+      } else if (deletedCount === 0) {
+        toast({
+          title: "Products Skipped",
+          description: `All ${skippedProducts.length} product(s) were skipped — they have active orders.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Partial Success",
+          description: `${deletedCount} product(s) deleted. ${skippedProducts.length} skipped — they have active orders.`,
+        });
+      }
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      toast({
+        title: "Bulk Delete Failed",
+        description: errorMessage || "Failed to delete products. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+}
+

@@ -199,9 +199,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if SKU already exists
-    const existingProduct = await prisma.product.findUnique({
-      where: { sku },
+    // Check if SKU already exists for this user
+    const existingProduct = await prisma.product.findFirst({
+      where: { sku, userId },
     });
 
     if (existingProduct) {
@@ -387,10 +387,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Check if SKU is being changed and if new SKU already exists
+    // Check if SKU is being changed and if new SKU already exists for this user
     if (sku && sku !== existingProduct.sku) {
-      const skuExists = await prisma.product.findUnique({
-        where: { sku },
+      const skuExists = await prisma.product.findFirst({
+        where: { sku, userId },
       });
 
       if (skuExists) {

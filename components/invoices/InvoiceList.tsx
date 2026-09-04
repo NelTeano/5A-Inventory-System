@@ -284,6 +284,16 @@ const InvoiceList = React.memo(
                       ),
                     },
                   ]}
+                  expandableSections={[
+                    {
+                      title: `Breakdown by supplier (${invoicesPageStats.supplierValues?.length ?? 0})`,
+                      items:
+                        invoicesPageStats.supplierValues?.map((sv) => ({
+                          label: sv.supplierName,
+                          value: formatCurrency(sv.value),
+                        })) ?? [],
+                    },
+                  ]}
                 />
                 <StatisticsCard
                   title="Total Revenue"

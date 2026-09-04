@@ -19,6 +19,7 @@ import {
   User,
   FileText,
   UserCircle,
+  Wrench,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts";
@@ -59,6 +60,11 @@ const MY_STORE_ITEMS: NavItem[] = [
     label: "Orders",
     icon: ShoppingCart,
     countKey: "clientOrders",
+  },
+  {
+    href: "/admin/repair-orders",
+    label: "Repair Orders",
+    icon: Wrench,
   },
   {
     href: "/admin/invoices",
