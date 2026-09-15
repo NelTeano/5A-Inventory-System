@@ -105,19 +105,17 @@ export default function InvoiceActions({ invoice, onEdit, detailHrefBase }: Invo
             {isSending ? "Sending..." : "Send Invoice"}
           </DropdownMenuItem>
         )}
-        {invoice.status !== "cancelled" && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-red-600 dark:text-red-400"
-              onClick={() => setDeleteDialogOpen(true)}
-              disabled={isDeleting}
-            >
-              <Trash2 className="h-4 w-4" />
-              {isDeleting ? "Deleting..." : "Delete Invoice"}
-            </DropdownMenuItem>
-          </>
-        )}
+        <>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-red-600 dark:text-red-400"
+            onClick={() => setDeleteDialogOpen(true)}
+            disabled={isDeleting}
+          >
+            <Trash2 className="h-4 w-4" />
+            {isDeleting ? "Deleting..." : "Delete Invoice"}
+          </DropdownMenuItem>
+        </>
       </DropdownMenuContent>
     </DropdownMenu>
 

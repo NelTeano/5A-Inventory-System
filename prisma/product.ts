@@ -96,6 +96,17 @@ export const updateProduct = async (
 };
 
 export const deleteProduct = async (id: string) => {
+  // Keep historical orders/invoices, but remove rows that directly reference the product.
+  await prisma.orderItem.deleteMany({ where: { productId: id } });
+  await prisma.repairOrderItem.deleteMany({ where: { productId: id } });
+  await prisma.productReview.deleteMany({ where: { productId: id } });
+  await prisma.stockAllocation.deleteMany({ where: { productId: id } });
+  await prisma.stockTransfer.deleteMany({ where: { productId: id } });
+  await prisma.supportTicket.updateMany({
+    where: { productId: id },
+    data: { productId: null },
+  });
+
   return prisma.product.delete({
     where: { id },
   });

@@ -188,13 +188,13 @@ export function useBulkDeleteProducts() {
       } else if (deletedCount === 0) {
         toast({
           title: "Products Skipped",
-          description: `All ${skippedProducts.length} product(s) were skipped — they have active orders.`,
+          description: `All ${skippedProducts.length} product(s) were skipped.`,
           variant: "destructive",
         });
       } else {
         toast({
           title: "Partial Success",
-          description: `${deletedCount} product(s) deleted. ${skippedProducts.length} skipped — they have active orders.`,
+          description: `${deletedCount} product(s) deleted. ${skippedProducts.length} product(s) skipped.`,
         });
       }
     },

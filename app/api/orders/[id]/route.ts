@@ -13,7 +13,6 @@ import {
   getOrderByIdForSupplier,
   getOrderByIdForProductOwner,
   updateOrder,
-  cancelOrder,
 } from "@/prisma/order";
 import { getSupplierByUserId } from "@/prisma/supplier";
 import { prisma } from "@/prisma/client";
@@ -509,7 +508,7 @@ export async function PUT(
 
 /**
  * DELETE /api/orders/:id
- * Cancel order (soft delete)
+ * Permanently delete an order and its dependent invoice/order items.
  */
 export async function DELETE(
   request: NextRequest,
@@ -533,8 +532,8 @@ export async function DELETE(
     const { id } = await params;
     const userId = session.id;
 
-    // Get existing order before cancellation for notification.
-    // Admin can cancel any order; other roles only their own.
+    // Admin can delete any order; other roles can delete their own orders or
+    // orders linked to their products.
     const isAdmin = session.role === "admin";
     let existingOrder: Awaited<ReturnType<typeof getOrderById>> | null;
     if (isAdmin) {
@@ -549,91 +548,25 @@ export async function DELETE(
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // Cancel order — for admin, use the order's own userId so the
-    // Prisma cancelOrder filter matches.
-    const order = await cancelOrder(id, isAdmin ? existingOrder.userId : userId);
+    await prisma.order.delete({ where: { id } });
 
     createAuditLog({
       userId,
       action: "delete",
       entityType: "order",
       entityId: id,
-      details: { orderNumber: existingOrder.orderNumber, summary: "Order cancelled" },
+      details: { orderNumber: existingOrder.orderNumber, summary: "Order permanently deleted" },
     }).catch(() => {});
 
     // Global invalidation: orders affect product/category/supplier detail Recent Orders
     const { invalidateOnOrderChange } = await import("@/lib/cache");
     await invalidateOnOrderChange();
 
-    // Create in-app notification for order cancellation (async, non-blocking)
-    createOrderNotification(
-      "order_status_update",
-      order.orderNumber,
-      `Order ${order.orderNumber} has been cancelled`,
-      userId,
-      order.id,
-    ).catch((error) => {
-      // Log error but don't fail the request
-      logger.error(
-        "Failed to create in-app notification for order cancellation:",
-        error,
-      );
+    return NextResponse.json({
+      id,
+      orderNumber: existingOrder.orderNumber,
+      message: "Order deleted successfully",
     });
-
-    // Transform order for response
-    const transformedOrder = {
-      id: order.id,
-      orderNumber: order.orderNumber,
-      userId: order.userId,
-      clientId: order.clientId,
-      status: order.status,
-      paymentStatus: order.paymentStatus,
-      subtotal: order.subtotal,
-      tax: order.tax,
-      shipping: order.shipping,
-      discount: order.discount,
-      total: order.total,
-      shippingAddress: order.shippingAddress,
-      billingAddress: order.billingAddress,
-      notes: order.notes,
-      trackingNumber: order.trackingNumber,
-      trackingCarrier: order.trackingCarrier ?? null,
-      trackingUrl: order.trackingUrl,
-      labelUrl: order.labelUrl ?? null,
-      estimatedDelivery: order.estimatedDelivery?.toISOString() || null,
-      shippedAt: order.shippedAt?.toISOString() || null,
-      deliveredAt: order.deliveredAt?.toISOString() || null,
-      cancelledAt: order.cancelledAt?.toISOString() || null,
-      createdAt: order.createdAt.toISOString(),
-      updatedAt: order.updatedAt?.toISOString() || null,
-      createdBy: order.createdBy,
-      updatedBy: order.updatedBy,
-      items: (order.items || []).map(
-        (item: {
-          id: string;
-          orderId: string;
-          productId: string;
-          productName: string;
-          sku: string | null;
-          quantity: number;
-          price: number;
-          subtotal: number;
-          createdAt: Date;
-        }) => ({
-          id: item.id,
-          orderId: item.orderId,
-          productId: item.productId,
-          productName: item.productName,
-          sku: item.sku,
-          quantity: item.quantity,
-          price: item.price,
-          subtotal: item.subtotal,
-          createdAt: item.createdAt.toISOString(),
-        }),
-      ),
-    };
-
-    return NextResponse.json(transformedOrder);
   } catch (error) {
     logger.error("Error cancelling order:", error);
     return NextResponse.json(

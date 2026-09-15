@@ -534,6 +534,14 @@ const ProductList = React.memo(() => {
                         value: formatCurrency(sv.value),
                       })) ?? [],
                   },
+                  {
+                    title: `Breakdown by category (${dashboard.categoryValues?.length ?? 0})`,
+                    items:
+                      dashboard.categoryValues?.map((cv) => ({
+                        label: cv.categoryName,
+                        value: formatCurrency(cv.value),
+                      })) ?? [],
+                  },
                 ]}
               />
               <StatisticsCard
@@ -656,6 +664,14 @@ const ProductList = React.memo(() => {
                       productsPageStats.supplierValues?.map((sv) => ({
                         label: sv.supplierName,
                         value: formatCurrency(sv.value),
+                      })) ?? [],
+                  },
+                  {
+                    title: `Breakdown by category (${productsPageStats.categoryValues?.length ?? 0})`,
+                    items:
+                      productsPageStats.categoryValues?.map((cv) => ({
+                        label: cv.categoryName,
+                        value: formatCurrency(cv.value),
                       })) ?? [],
                   },
                 ]}

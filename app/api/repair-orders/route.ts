@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       repairOrderNumber: order.repairOrderNumber,
       technicianName: order.technicianName,
       customerName: order.customerName,
+      warrantyStatus: order.warrantyStatus ?? "OUT_OF_WARRANTY",
       notes: order.notes,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt?.toISOString() || null,
@@ -101,6 +102,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const warrantyStatus =
+      body.warrantyStatus === "IN_WARRANTY" ||
+      body.warrantyStatus === "OUT_OF_WARRANTY"
+        ? body.warrantyStatus
+        : "OUT_OF_WARRANTY";
+
     if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
       return NextResponse.json(
         { error: "At least one material/item is required" },
@@ -110,9 +117,13 @@ export async function POST(request: NextRequest) {
 
     // Validate each item
     for (const item of body.items) {
-      if (!item.productId || !item.quantity || item.quantity <= 0) {
+      if (
+        !item.productId ||
+        (item.quantity !== undefined &&
+          (!Number.isInteger(item.quantity) || item.quantity < 0))
+      ) {
         return NextResponse.json(
-          { error: "Each item must have a valid productId and quantity > 0" },
+          { error: "Each item must have a valid productId and non-negative quantity" },
           { status: 400 },
         );
       }
@@ -121,7 +132,11 @@ export async function POST(request: NextRequest) {
     const repairOrderData: CreateRepairOrderInput = {
       technicianName: body.technicianName,
       customerName: body.customerName,
-      items: body.items,
+      warrantyStatus,
+      items: body.items.map((item: { productId: string; quantity?: number }) => ({
+        productId: item.productId,
+        quantity: item.quantity ?? 0,
+      })),
       notes: body.notes,
     };
 
@@ -134,6 +149,7 @@ export async function POST(request: NextRequest) {
       repairOrderNumber: repairOrder.repairOrderNumber,
       technicianName: repairOrder.technicianName,
       customerName: repairOrder.customerName,
+      warrantyStatus: repairOrder.warrantyStatus,
       notes: repairOrder.notes,
       createdAt: repairOrder.createdAt.toISOString(),
       updatedAt: repairOrder.updatedAt?.toISOString() || null,

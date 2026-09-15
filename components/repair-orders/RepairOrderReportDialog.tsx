@@ -68,6 +68,7 @@ interface DailyReportRow {
   date: string;
   dateLabel: string;
   technicianName: string;
+  warrantyStatus: "IN_WARRANTY" | "OUT_OF_WARRANTY";
   orderCount: number;
   totalQuantity: number;
   totalValue: number;
@@ -78,6 +79,7 @@ interface WeeklyReportRow {
   weekStart: string;
   weekLabel: string;
   technicianName: string;
+  warrantyStatus: "IN_WARRANTY" | "OUT_OF_WARRANTY";
   orderCount: number;
   totalQuantity: number;
   totalValue: number;
@@ -146,7 +148,10 @@ function buildDailyReport(
     }
     const techMap = byDateTechnician.get(dateKey)!;
 
-    const existing = techMap.get(order.technicianName);
+    const warrantyKey = order.warrantyStatus || "OUT_OF_WARRANTY";
+    const groupKey = `${order.technicianName}:${warrantyKey}`;
+    const existing = techMap.get(groupKey);
+
     if (existing) {
       existing.orderCount += 1;
       for (const item of order.items) {
@@ -161,10 +166,11 @@ function buildDailyReport(
         totalQuantity += item.quantity;
         totalValue += item.subtotal;
       }
-      techMap.set(order.technicianName, {
+      techMap.set(groupKey, {
         date: dateKey,
         dateLabel: new Date(dateKey).toLocaleDateString(),
         technicianName: order.technicianName,
+        warrantyStatus: warrantyKey,
         orderCount: 1,
         totalQuantity,
         totalValue,
@@ -214,7 +220,9 @@ function buildWeeklyReport(
     }
     const techMap = byWeekTechnician.get(weekKey)!;
 
-    const existing = techMap.get(order.technicianName);
+    const warrantyKey = order.warrantyStatus || "OUT_OF_WARRANTY";
+    const groupKey = `${order.technicianName}:${warrantyKey}`;
+    const existing = techMap.get(groupKey);
     if (existing) {
       existing.orderCount += 1;
       for (const item of order.items) {
@@ -229,10 +237,11 @@ function buildWeeklyReport(
         totalQuantity += item.quantity;
         totalValue += item.subtotal;
       }
-      techMap.set(order.technicianName, {
+      techMap.set(groupKey, {
         weekStart: weekKey,
         weekLabel: formatWeekLabel(new Date(weekKey)),
         technicianName: order.technicianName,
+        warrantyStatus: warrantyKey,
         orderCount: 1,
         totalQuantity,
         totalValue,
@@ -268,6 +277,7 @@ export function RepairOrderReportDialog({
   const { toast } = useToast();
   const [reportType, setReportType] = useState<"daily" | "weekly">("daily");
   const [dateFilter, setDateFilter] = useState<string>("all");
+  const [warrantyFilter, setWarrantyFilter] = useState<"all" | "IN_WARRANTY" | "OUT_OF_WARRANTY">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -283,22 +293,26 @@ export function RepairOrderReportDialog({
   const filteredDailyRows = useMemo(() => {
     return dailyReport.rows.filter((row) => {
       const matchesDate = dateFilter === "all" || row.date === dateFilter;
+      const matchesWarranty =
+        warrantyFilter === "all" || row.warrantyStatus === warrantyFilter;
       const matchesSearch =
         !searchTerm ||
         row.technicianName.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesDate && matchesSearch;
+      return matchesDate && matchesWarranty && matchesSearch;
     });
-  }, [dailyReport.rows, dateFilter, searchTerm]);
+  }, [dailyReport.rows, dateFilter, searchTerm, warrantyFilter]);
 
   const filteredWeeklyRows = useMemo(() => {
     return weeklyReport.rows.filter((row) => {
       const matchesDate = dateFilter === "all" || row.weekStart === dateFilter;
+      const matchesWarranty =
+        warrantyFilter === "all" || row.warrantyStatus === warrantyFilter;
       const matchesSearch =
         !searchTerm ||
         row.technicianName.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesDate && matchesSearch;
+      return matchesDate && matchesWarranty && matchesSearch;
     });
-  }, [weeklyReport.rows, dateFilter, searchTerm]);
+  }, [weeklyReport.rows, dateFilter, searchTerm, warrantyFilter]);
 
   const currentRows =
     reportType === "daily" ? filteredDailyRows : filteredWeeklyRows;
@@ -411,6 +425,7 @@ export function RepairOrderReportDialog({
           csvData.push({
             [reportType === "daily" ? "Date" : "Week"]: dateCol,
             Technician: row.technicianName,
+            Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
             Product: "—",
             SKU: "—",
             "Qty Used": 0,
@@ -424,6 +439,7 @@ export function RepairOrderReportDialog({
             csvData.push({
               [reportType === "daily" ? "Date" : "Week"]: dateCol,
               Technician: row.technicianName,
+              Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
               Product: mat.productName,
               SKU: mat.sku || "—",
               "Qty Used": mat.quantity,
@@ -442,6 +458,7 @@ export function RepairOrderReportDialog({
           key: reportType === "daily" ? "Date" : "Week",
         },
         { header: "Technician", key: "Technician" },
+        { header: "Warranty", key: "Warranty" },
         { header: "Product", key: "Product" },
         { header: "SKU", key: "SKU" },
         { header: "Qty Used", key: "Qty Used" },
@@ -487,6 +504,7 @@ export function RepairOrderReportDialog({
           excelData.push({
             [reportType === "daily" ? "Date" : "Week"]: dateCol,
             Technician: row.technicianName,
+            Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
             Product: "—",
             SKU: "—",
             "Qty Used": 0,
@@ -500,6 +518,7 @@ export function RepairOrderReportDialog({
             excelData.push({
               [reportType === "daily" ? "Date" : "Week"]: dateCol,
               Technician: row.technicianName,
+              Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
               Product: mat.productName,
               SKU: mat.sku || "—",
               "Qty Used": mat.quantity,
@@ -522,6 +541,7 @@ export function RepairOrderReportDialog({
             width: reportType === "daily" ? 14 : 30,
           },
           { header: "Technician", key: "Technician", width: 25 },
+          { header: "Warranty", key: "Warranty", width: 20 },
           { header: "Product", key: "Product", width: 30 },
           { header: "SKU", key: "SKU", width: 16 },
           { header: "Qty Used", key: "Qty Used", width: 12 },
@@ -625,6 +645,20 @@ export function RepairOrderReportDialog({
                       : formatWeekLabel(new Date(d))}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={warrantyFilter}
+              onValueChange={(value) => setWarrantyFilter(value as "all" | "IN_WARRANTY" | "OUT_OF_WARRANTY")}
+            >
+              <SelectTrigger className="h-10 w-full sm:w-52 rounded-[28px] border border-violet-400/30 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-gray-900 dark:text-white">
+                <SelectValue placeholder="All warranty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Warranty</SelectItem>
+                <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
+                <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
               </SelectContent>
             </Select>
 
@@ -765,6 +799,9 @@ export function RepairOrderReportDialog({
                     <th className="px-4 py-2 font-medium text-gray-700 dark:text-white/85">
                       Technician
                     </th>
+                    <th className="px-4 py-2 font-medium text-gray-700 dark:text-white/85">
+                      Warranty
+                    </th>
                     <th className="px-4 py-2 font-medium text-gray-700 dark:text-white/85 text-right">
                       Orders
                     </th>
@@ -783,7 +820,7 @@ export function RepairOrderReportDialog({
                   {currentRows.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={7}
+                        colSpan={8}
                         className="px-4 py-8 text-center text-gray-500 dark:text-white/50"
                       >
                         No report data found for the selected criteria.
@@ -814,6 +851,11 @@ export function RepairOrderReportDialog({
                             <td className="px-4 py-2 font-medium text-gray-800 dark:text-white/90">
                               {row.technicianName}
                             </td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-white/80">
+                              <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-medium ${row.warrantyStatus === "IN_WARRANTY" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700 dark:text-amber-300"}`}>
+                                {row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty"}
+                              </span>
+                            </td>
                             <td className="px-4 py-2 text-right text-gray-700 dark:text-white/80">
                               {row.orderCount}
                             </td>
@@ -831,7 +873,7 @@ export function RepairOrderReportDialog({
                           {/* Expanded Materials Sub-Table */}
                           {isExpanded && row.materials.length > 0 && (
                             <tr className="bg-violet-500/5 dark:bg-violet-500/10">
-                              <td colSpan={7} className="px-4 py-3">
+                              <td colSpan={8} className="px-4 py-3">
                                 <div className="ml-8 rounded-xl border border-violet-400/15 overflow-hidden">
                                   <table className="w-full text-xs">
                                     <thead>

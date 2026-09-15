@@ -237,6 +237,14 @@ export default function AdminAnalyticsContent({
                         value: formatCurrency(sv.value),
                       })) ?? [],
                   },
+                  {
+                    title: `Breakdown by category (${stats.categoryValues?.length ?? 0})`,
+                    items:
+                      stats.categoryValues?.map((cv) => ({
+                        label: cv.categoryName,
+                        value: formatCurrency(cv.value),
+                      })) ?? [],
+                  },
                 ]}
               />
               <StatisticsCard

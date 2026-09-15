@@ -11,6 +11,12 @@ import { getSupplierByUserId } from "@/prisma/supplier";
 import { getCache, setCache, invalidateCache, cacheKeys } from "@/lib/cache";
 import { withRateLimit, defaultRateLimits } from "@/lib/api/rate-limit";
 import { prisma } from "@/prisma/client";
+import { deleteProduct } from "@/prisma/product";
+import {
+  deleteQRCodeFromImageKit,
+  deleteProductImageFromImageKit,
+} from "@/lib/imagekit";
+import { createAuditLog } from "@/prisma/audit-log";
 
 /**
  * GET /api/products/:id
@@ -235,6 +241,62 @@ export async function GET(
     logger.error("Error fetching product:", error);
     return NextResponse.json(
       { error: "Failed to fetch product" },
+      { status: 500 },
+    );
+  }
+}
+
+/**
+ * DELETE /api/products/:id
+ * Delete a product while preserving historical order and invoice documents.
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await getSessionFromRequest(request);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (session.role === "supplier") {
+      return NextResponse.json(
+        { error: "Suppliers cannot delete products; only admins can." },
+        { status: 403 },
+      );
+    }
+
+    const { id } = await params;
+    const product = await prisma.product.findFirst({
+      where: { id, userId: session.id },
+      select: { id: true, name: true, qrCodeFileId: true, imageFileId: true },
+    });
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    await deleteProduct(id);
+    if (product.qrCodeFileId) {
+      deleteQRCodeFromImageKit(product.qrCodeFileId).catch(() => {});
+    }
+    if (product.imageFileId) {
+      deleteProductImageFromImageKit(product.imageFileId).catch(() => {});
+    }
+    createAuditLog({
+      userId: session.id,
+      action: "delete",
+      entityType: "product",
+      entityId: id,
+      details: { productName: product.name },
+    }).catch(() => {});
+
+    const { invalidateOnProductChange } = await import("@/lib/cache");
+    await invalidateOnProductChange().catch(() => {});
+    return NextResponse.json({ id, name: product.name });
+  } catch (error) {
+    logger.error("Error deleting product:", error);
+    return NextResponse.json(
+      { error: "Failed to delete product. Please try again later." },
       { status: 500 },
     );
   }

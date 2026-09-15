@@ -205,6 +205,14 @@ const CategoryList = React.memo(() => {
                         value: formatCurrency(sv.value),
                       })) ?? [],
                   },
+                  {
+                    title: `Breakdown by category (${categoriesPageStats.categoryValues?.length ?? 0})`,
+                    items:
+                      categoriesPageStats.categoryValues?.map((cv) => ({
+                        label: cv.categoryName,
+                        value: formatCurrency(cv.value),
+                      })) ?? [],
+                  },
                 ]}
               />
               <StatisticsCard

@@ -19,7 +19,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ProductSearchCombobox } from "@/components/orders/ProductSearchCombobox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm, FormProvider, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,11 +37,12 @@ import { useToast } from "@/hooks/use-toast";
 const repairOrderSchema = z.object({
   technicianName: z.string().min(1, "Technician name is required"),
   customerName: z.string().min(1, "Customer name is required"),
+  warrantyStatus: z.enum(["IN_WARRANTY", "OUT_OF_WARRANTY"]),
   items: z
     .array(
       z.object({
         productId: z.string().min(1, "Product is required"),
-        quantity: z.number().min(1, "Quantity must be at least 1"),
+        quantity: z.number().int().min(0, "Quantity cannot be negative"),
       }),
     )
     .min(1, "At least one material is required"),
@@ -57,17 +64,14 @@ export function RepairOrderDialog({
   const { toast } = useToast();
 
   // Fetch products for selection
-  const { data: products = [] } = useProducts();
+  const {
+    data: products = [],
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useProducts();
 
-  // Filter to only show available products
-  const availableProducts = useMemo(
-    () =>
-      products.filter(
-        (product: { status?: string; quantity?: number }) =>
-          product.status !== "Stock Out" && Number(product.quantity ?? 0) > 0,
-      ),
-    [products],
-  );
+  // Repair orders can record any product, including materials with no stock.
+  const availableProducts = products;
 
   // Create repair order mutation
   const createRepairOrderMutation = useCreateRepairOrder();
@@ -79,6 +83,7 @@ export function RepairOrderDialog({
     defaultValues: {
       technicianName: "",
       customerName: "",
+      warrantyStatus: "OUT_OF_WARRANTY",
       items: [{ productId: "", quantity: 1 }],
       notes: "",
     },
@@ -126,6 +131,7 @@ export function RepairOrderDialog({
       reset({
         technicianName: "",
         customerName: "",
+        warrantyStatus: "OUT_OF_WARRANTY",
         items: [{ productId: "", quantity: 1 }],
         notes: "",
       });
@@ -138,7 +144,7 @@ export function RepairOrderDialog({
       // Validate items
       const validItems = data.items.filter((item) => {
         if (!item.productId) return false;
-        return item.quantity > 0;
+        return item.quantity >= 0;
       });
 
       if (validItems.length === 0) {
@@ -149,6 +155,7 @@ export function RepairOrderDialog({
       await createRepairOrderMutation.mutateAsync({
         technicianName: data.technicianName,
         customerName: data.customerName,
+        warrantyStatus: data.warrantyStatus,
         items: validItems,
         notes: data.notes,
       });
@@ -230,6 +237,26 @@ export function RepairOrderDialog({
                 </div>
               </div>
 
+              <div className="flex flex-col gap-2">
+                <Label className="text-white/80 text-sm font-medium">
+                  Warranty Status *
+                </Label>
+                <Select
+                  value={watch("warrantyStatus")}
+                  onValueChange={(value) =>
+                    setValue("warrantyStatus", value as "IN_WARRANTY" | "OUT_OF_WARRANTY")
+                  }
+                >
+                  <SelectTrigger className="h-11 border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-violet-400 focus-visible:border-violet-400 focus:ring-violet-500/50 focus-visible:ring-violet-500/50 shadow-[0_10px_30px_rgba(139,92,246,0.15)]">
+                    <SelectValue placeholder="Select warranty status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
+                    <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Materials Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -275,15 +302,48 @@ export function RepairOrderDialog({
                             <Label className="text-white/80 text-sm">
                               Material {index + 1}
                             </Label>
-                            <ProductSearchCombobox
-                              value={productId || ""}
+                            <Select
+                              value={productId || undefined}
+                              disabled={productsLoading || productsError}
                               onValueChange={(value) => {
-                                setValue(`items.${index}.productId`, value);
+                                setValue(
+                                  `items.${index}.productId`,
+                                  value,
+                                  { shouldValidate: true },
+                                );
                                 setValue(`items.${index}.quantity`, 1);
                               }}
-                              products={availableProducts}
-                              placeholder="Select Material"
-                            />
+                            >
+                              <SelectTrigger className="h-11 w-full border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 text-white">
+                                <SelectValue
+                                  placeholder={
+                                    productsLoading
+                                      ? "Loading materials..."
+                                      : productsError
+                                        ? "Unable to load materials"
+                                        : "Select Material"
+                                  }
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableProducts.length > 0 ? (
+                                  availableProducts.map((product) => (
+                                    <SelectItem
+                                      key={product.id}
+                                      value={product.id}
+                                    >
+                                      {product.sku} - {product.name} (Stock: {product.quantity})
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="no-materials" disabled>
+                                    {productsError
+                                      ? "Unable to load materials"
+                                      : "No materials found"}
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
                             {errors.items?.[index]?.productId && (
                               <p className="text-red-500 text-xs">
                                 {String(
@@ -304,7 +364,9 @@ export function RepairOrderDialog({
                               value={
                                 quantityValue !== undefined &&
                                 quantityValue !== null
-                                  ? quantityValue.toString()
+                                  ? quantityValue === 0 || Number.isNaN(quantityValue)
+                                    ? ""
+                                    : quantityValue.toString()
                                   : ""
                               }
                               onChange={(e) => {
@@ -314,7 +376,7 @@ export function RepairOrderDialog({
                                   inputValue === null ||
                                   inputValue === undefined
                                 ) {
-                                  setValue(`items.${index}.quantity`, 1, {
+                                  setValue(`items.${index}.quantity`, 0, {
                                     shouldValidate: true,
                                   });
                                 } else {
@@ -325,6 +387,10 @@ export function RepairOrderDialog({
                                       parsedValue,
                                       { shouldValidate: true },
                                     );
+                                  } else {
+                                    setValue(`items.${index}.quantity`, 0, {
+                                      shouldValidate: true,
+                                    });
                                   }
                                 }
                               }}

@@ -130,8 +130,7 @@ export function useUpdateOrder() {
 }
 
 /**
- * Delete/Cancel order mutation
- * Mutation hook for cancelling an order
+ * Delete order mutation
  */
 export function useDeleteOrder() {
   const queryClient = useQueryClient();
@@ -146,18 +145,17 @@ export function useDeleteOrder() {
       queryClient.removeQueries({ queryKey: queryKeys.orders.detail(data.id) });
       invalidateAllRelatedQueries(queryClient);
 
-      // Show success toast
       toast({
-        title: "Order Cancelled Successfully",
-        description: `Order ${data.orderNumber} has been cancelled.`,
+        title: "Order Deleted Successfully",
+        description: `Order ${data.orderNumber} has been permanently deleted.`,
       });
     },
     onError: (error: unknown) => {
       // Show error toast
       toast({
-        title: "Order Cancellation Failed",
+        title: "Order Deletion Failed",
         description:
-          getErrorMessage(error) || "Failed to cancel order. Please try again.",
+          getErrorMessage(error) || "Failed to delete order. Please try again.",
         variant: "destructive",
       });
     },
