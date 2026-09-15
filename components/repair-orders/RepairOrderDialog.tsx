@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductSearchCombobox } from "@/components/orders/ProductSearchCombobox";
 import { useForm, FormProvider, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -43,7 +42,7 @@ const repairOrderSchema = z.object({
     .array(
       z.object({
         productId: z.string().min(1, "Product is required"),
-        quantity: z.number().min(1, "Quantity must be at least 1"),
+        quantity: z.number().int().min(0, "Quantity cannot be negative"),
       }),
     )
     .min(1, "At least one material is required"),
@@ -65,17 +64,14 @@ export function RepairOrderDialog({
   const { toast } = useToast();
 
   // Fetch products for selection
-  const { data: products = [] } = useProducts();
+  const {
+    data: products = [],
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useProducts();
 
-  // Filter to only show available products
-  const availableProducts = useMemo(
-    () =>
-      products.filter(
-        (product: { status?: string; quantity?: number }) =>
-          product.status !== "Stock Out" && Number(product.quantity ?? 0) > 0,
-      ),
-    [products],
-  );
+  // Repair orders can record any product, including materials with no stock.
+  const availableProducts = products;
 
   // Create repair order mutation
   const createRepairOrderMutation = useCreateRepairOrder();
@@ -148,7 +144,7 @@ export function RepairOrderDialog({
       // Validate items
       const validItems = data.items.filter((item) => {
         if (!item.productId) return false;
-        return item.quantity > 0;
+        return item.quantity >= 0;
       });
 
       if (validItems.length === 0) {
@@ -306,15 +302,48 @@ export function RepairOrderDialog({
                             <Label className="text-white/80 text-sm">
                               Material {index + 1}
                             </Label>
-                            <ProductSearchCombobox
-                              value={productId || ""}
+                            <Select
+                              value={productId || undefined}
+                              disabled={productsLoading || productsError}
                               onValueChange={(value) => {
-                                setValue(`items.${index}.productId`, value);
+                                setValue(
+                                  `items.${index}.productId`,
+                                  value,
+                                  { shouldValidate: true },
+                                );
                                 setValue(`items.${index}.quantity`, 1);
                               }}
-                              products={availableProducts}
-                              placeholder="Select Material"
-                            />
+                            >
+                              <SelectTrigger className="h-11 w-full border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 text-white">
+                                <SelectValue
+                                  placeholder={
+                                    productsLoading
+                                      ? "Loading materials..."
+                                      : productsError
+                                        ? "Unable to load materials"
+                                        : "Select Material"
+                                  }
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableProducts.length > 0 ? (
+                                  availableProducts.map((product) => (
+                                    <SelectItem
+                                      key={product.id}
+                                      value={product.id}
+                                    >
+                                      {product.sku} - {product.name} (Stock: {product.quantity})
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="no-materials" disabled>
+                                    {productsError
+                                      ? "Unable to load materials"
+                                      : "No materials found"}
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
                             {errors.items?.[index]?.productId && (
                               <p className="text-red-500 text-xs">
                                 {String(
@@ -335,7 +364,9 @@ export function RepairOrderDialog({
                               value={
                                 quantityValue !== undefined &&
                                 quantityValue !== null
-                                  ? quantityValue.toString()
+                                  ? quantityValue === 0 || Number.isNaN(quantityValue)
+                                    ? ""
+                                    : quantityValue.toString()
                                   : ""
                               }
                               onChange={(e) => {
@@ -345,7 +376,7 @@ export function RepairOrderDialog({
                                   inputValue === null ||
                                   inputValue === undefined
                                 ) {
-                                  setValue(`items.${index}.quantity`, 1, {
+                                  setValue(`items.${index}.quantity`, 0, {
                                     shouldValidate: true,
                                   });
                                 } else {
@@ -356,6 +387,10 @@ export function RepairOrderDialog({
                                       parsedValue,
                                       { shouldValidate: true },
                                     );
+                                  } else {
+                                    setValue(`items.${index}.quantity`, 0, {
+                                      shouldValidate: true,
+                                    });
                                   }
                                 }
                               }}

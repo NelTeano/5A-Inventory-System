@@ -114,8 +114,12 @@ export function ProductSearchCombobox({
                 <CommandItem
                   key={product.id}
                   value={product.id}
-                  onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? "" : currentValue);
+                  onSelect={() => {
+                    onValueChange(product.id);
+                    setOpen(false);
+                  }}
+                  onClick={() => {
+                    onValueChange(product.id);
                     setOpen(false);
                   }}
                   className="cursor-pointer text-gray-900 dark:text-white/80 focus:bg-violet-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white"

@@ -117,9 +117,13 @@ export async function POST(request: NextRequest) {
 
     // Validate each item
     for (const item of body.items) {
-      if (!item.productId || !item.quantity || item.quantity <= 0) {
+      if (
+        !item.productId ||
+        (item.quantity !== undefined &&
+          (!Number.isInteger(item.quantity) || item.quantity < 0))
+      ) {
         return NextResponse.json(
-          { error: "Each item must have a valid productId and quantity > 0" },
+          { error: "Each item must have a valid productId and non-negative quantity" },
           { status: 400 },
         );
       }
@@ -129,7 +133,10 @@ export async function POST(request: NextRequest) {
       technicianName: body.technicianName,
       customerName: body.customerName,
       warrantyStatus,
-      items: body.items,
+      items: body.items.map((item: { productId: string; quantity?: number }) => ({
+        productId: item.productId,
+        quantity: item.quantity ?? 0,
+      })),
       notes: body.notes,
     };
 
