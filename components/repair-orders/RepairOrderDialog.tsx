@@ -30,6 +30,7 @@ import { useForm, FormProvider, useFieldArray, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateRepairOrder, useProducts } from "@/hooks/queries";
+import { ProductSearchCombobox } from "@/components/orders/ProductSearchCombobox";
 import { Plus, Trash2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -302,48 +303,25 @@ export function RepairOrderDialog({
                             <Label className="text-white/80 text-sm">
                               Material {index + 1}
                             </Label>
-                            <Select
-                              value={productId || undefined}
+                            <ProductSearchCombobox
+                              value={productId}
+                              products={availableProducts}
                               disabled={productsLoading || productsError}
+                              placeholder={
+                                productsLoading
+                                  ? "Loading materials..."
+                                  : productsError
+                                    ? "Unable to load materials"
+                                    : "Select Material"
+                              }
+                              emptyMessage="No materials found."
                               onValueChange={(value) => {
-                                setValue(
-                                  `items.${index}.productId`,
-                                  value,
-                                  { shouldValidate: true },
-                                );
+                                setValue(`items.${index}.productId`, value, {
+                                  shouldValidate: true,
+                                });
                                 setValue(`items.${index}.quantity`, 1);
                               }}
-                            >
-                              <SelectTrigger className="h-11 w-full border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 text-white">
-                                <SelectValue
-                                  placeholder={
-                                    productsLoading
-                                      ? "Loading materials..."
-                                      : productsError
-                                        ? "Unable to load materials"
-                                        : "Select Material"
-                                  }
-                                />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {availableProducts.length > 0 ? (
-                                  availableProducts.map((product) => (
-                                    <SelectItem
-                                      key={product.id}
-                                      value={product.id}
-                                    >
-                                      {product.sku} - {product.name} (Stock: {product.quantity})
-                                    </SelectItem>
-                                  ))
-                                ) : (
-                                  <SelectItem value="no-materials" disabled>
-                                    {productsError
-                                      ? "Unable to load materials"
-                                      : "No materials found"}
-                                  </SelectItem>
-                                )}
-                              </SelectContent>
-                            </Select>
+                            />
                             {errors.items?.[index]?.productId && (
                               <p className="text-red-500 text-xs">
                                 {String(

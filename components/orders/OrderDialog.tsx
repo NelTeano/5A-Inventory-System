@@ -217,6 +217,15 @@ export default function OrderDialog({
   const products = isClientCreatingOrder ? clientProducts : adminProducts;
   const productOwner = browseData?.owner;
 
+  const getAvailableStock = (product: {
+    quantity?: number;
+    reservedQuantity?: number;
+  }) =>
+    Math.max(
+      0,
+      Number(product.quantity ?? 0) - Number(product.reservedQuantity ?? 0),
+    );
+
   // When client creates order and selected owner has no products, show dynamic placeholder in product dropdown
   const productSelectPlaceholder =
     isClientCreatingOrder && clientProducts.length === 0 && productOwner
@@ -227,8 +236,12 @@ export default function OrderDialog({
   const availableProducts = useMemo(
     () =>
       products.filter(
-        (product: { status?: string; quantity?: number }) =>
-          product.status !== "Stock Out" && Number(product.quantity ?? 0) > 0,
+        (product: {
+          status?: string;
+          quantity?: number;
+          reservedQuantity?: number;
+        }) =>
+          product.status !== "Stock Out" && getAvailableStock(product) > 0,
       ),
     [products],
   );
@@ -401,7 +414,7 @@ export default function OrderDialog({
         if (!product) {
           throw new Error(`Product not found: ${item.productId}`);
         }
-        const availableStock = Number(product.quantity);
+        const availableStock = getAvailableStock(product);
         const requestedQty =
           item.quantity !== undefined && item.quantity !== null
             ? Number(item.quantity)
@@ -990,7 +1003,7 @@ export default function OrderDialog({
                       (p) => p.id === productId,
                     );
                     const availableStock = selectedProduct
-                      ? Number(selectedProduct.quantity)
+                      ? getAvailableStock(selectedProduct)
                       : 0;
                     const itemSubtotal =
                       selectedProduct && quantity > 0
@@ -1320,7 +1333,7 @@ export default function OrderDialog({
                       );
                       const itemQty = item.quantity ?? 0;
                       return (
-                        product && Number(itemQty) > Number(product.quantity)
+                        product && Number(itemQty) > getAvailableStock(product)
                       );
                     })
                   }

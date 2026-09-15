@@ -59,6 +59,14 @@ export async function createOrder(data: CreateOrderInput, userId: string) {
 
   // Fetch products and calculate line items
   const productsToReserve: { id: string; qty: number }[] = [];
+  const requestedQuantities = new Map<string, number>();
+
+  for (const item of data.items) {
+    requestedQuantities.set(
+      item.productId,
+      (requestedQuantities.get(item.productId) ?? 0) + item.quantity,
+    );
+  }
 
   for (const item of data.items) {
     const product = await prisma.product.findUnique({
@@ -72,9 +80,10 @@ export async function createOrder(data: CreateOrderInput, userId: string) {
     // Check available stock (total quantity minus already reserved)
     const availableStock =
       Number(product.quantity) - Number(product.reservedQuantity ?? 0);
-    if (availableStock < item.quantity) {
+    const requestedQuantity = requestedQuantities.get(item.productId) ?? 0;
+    if (availableStock < requestedQuantity) {
       throw new Error(
-        `Insufficient stock for product ${product.name}. Available: ${availableStock}, Requested: ${item.quantity}`,
+        `Insufficient stock for product ${product.name}. Available: ${availableStock}, Requested: ${requestedQuantity}`,
       );
     }
 

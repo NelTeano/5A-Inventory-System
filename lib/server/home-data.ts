@@ -14,6 +14,7 @@ export type ProductForHome = {
   sku: string;
   price: number;
   quantity: number;
+  reservedQuantity: number;
   status: string;
   categoryId: string;
   supplierId: string;
@@ -99,6 +100,7 @@ export async function getProductsForUser(userId: string): Promise<ProductForHome
     sku: product.sku,
     price: Number(product.price),
     quantity: Number(product.quantity),
+    reservedQuantity: Number(product.reservedQuantity ?? 0),
     status: product.status,
     categoryId: product.categoryId,
     supplierId: product.supplierId,
@@ -169,6 +171,7 @@ export async function getProductsBySupplierId(
     sku: product.sku,
     price: Number(product.price),
     quantity: Number(product.quantity),
+    reservedQuantity: Number(product.reservedQuantity ?? 0),
     status: product.status,
     categoryId: product.categoryId,
     supplierId: product.supplierId,
