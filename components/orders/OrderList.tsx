@@ -316,6 +316,14 @@ const OrderList = React.memo(
                           value: formatCurrency(sv.value),
                         })) ?? [],
                     },
+                    {
+                      title: `Breakdown by category (${ordersPageStats.categoryValues?.length ?? 0})`,
+                      items:
+                        ordersPageStats.categoryValues?.map((cv) => ({
+                          label: cv.categoryName,
+                          value: formatCurrency(cv.value),
+                        })) ?? [],
+                    },
                   ]}
                 />
                 <StatisticsCard

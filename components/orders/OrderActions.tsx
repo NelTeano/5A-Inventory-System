@@ -45,11 +45,11 @@ export default function OrderActions({
   const isClientRole = user?.role === "client";
   const disableOrderActions = isSupplierRole || isClientRole;
 
-  // Handle Cancel Order
-  const handleCancelOrder = async () => {
+  // Handle Delete Order
+  const handleDeleteOrder = async () => {
     if (
       window.confirm(
-        `Are you sure you want to cancel order ${order.orderNumber}? This action cannot be undone.`,
+        `Are you sure you want to permanently delete order ${order.orderNumber}? Its invoice and order items will also be deleted. This action cannot be undone.`,
       )
     ) {
       try {
@@ -123,18 +123,14 @@ export default function OrderActions({
             Write / Edit review
           </DropdownMenuItem>
         )}
-        {order.status !== "cancelled" && (
-          <>
-            <DropdownMenuItem
-              className="text-red-600 dark:text-red-400"
-              onClick={handleCancelOrder}
-              disabled={isDeleting || disableOrderActions}
-            >
-              <Trash2 className="h-4 w-4" />
-              {isDeleting ? "Cancelling..." : "Cancel Order"}
-            </DropdownMenuItem>
-          </>
-        )}
+        <DropdownMenuItem
+          className="text-red-600 dark:text-red-400"
+          onClick={handleDeleteOrder}
+          disabled={isDeleting || disableOrderActions}
+        >
+          <Trash2 className="h-4 w-4" />
+          {isDeleting ? "Deleting..." : "Delete Order"}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

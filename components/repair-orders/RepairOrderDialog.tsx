@@ -19,6 +19,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProductSearchCombobox } from "@/components/orders/ProductSearchCombobox";
 import { useForm, FormProvider, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 const repairOrderSchema = z.object({
   technicianName: z.string().min(1, "Technician name is required"),
   customerName: z.string().min(1, "Customer name is required"),
+  warrantyStatus: z.enum(["IN_WARRANTY", "OUT_OF_WARRANTY"]),
   items: z
     .array(
       z.object({
@@ -79,6 +87,7 @@ export function RepairOrderDialog({
     defaultValues: {
       technicianName: "",
       customerName: "",
+      warrantyStatus: "OUT_OF_WARRANTY",
       items: [{ productId: "", quantity: 1 }],
       notes: "",
     },
@@ -126,6 +135,7 @@ export function RepairOrderDialog({
       reset({
         technicianName: "",
         customerName: "",
+        warrantyStatus: "OUT_OF_WARRANTY",
         items: [{ productId: "", quantity: 1 }],
         notes: "",
       });
@@ -149,6 +159,7 @@ export function RepairOrderDialog({
       await createRepairOrderMutation.mutateAsync({
         technicianName: data.technicianName,
         customerName: data.customerName,
+        warrantyStatus: data.warrantyStatus,
         items: validItems,
         notes: data.notes,
       });
@@ -228,6 +239,26 @@ export function RepairOrderDialog({
                     </p>
                   )}
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label className="text-white/80 text-sm font-medium">
+                  Warranty Status *
+                </Label>
+                <Select
+                  value={watch("warrantyStatus")}
+                  onValueChange={(value) =>
+                    setValue("warrantyStatus", value as "IN_WARRANTY" | "OUT_OF_WARRANTY")
+                  }
+                >
+                  <SelectTrigger className="h-11 border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-violet-400 focus-visible:border-violet-400 focus:ring-violet-500/50 focus-visible:ring-violet-500/50 shadow-[0_10px_30px_rgba(139,92,246,0.15)]">
+                    <SelectValue placeholder="Select warranty status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
+                    <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Materials Section */}

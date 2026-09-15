@@ -85,6 +85,7 @@ export async function createRepairOrder(
       repairOrderNumber,
       technicianName: data.technicianName,
       customerName: data.customerName,
+      warrantyStatus: data.warrantyStatus || "OUT_OF_WARRANTY",
       notes: data.notes || null,
       createdBy: userId,
       items: {

@@ -23,11 +23,14 @@ export interface RepairOrderItem {
  * Repair order interface
  * Matches Prisma RepairOrder model
  */
+export type WarrantyStatus = "IN_WARRANTY" | "OUT_OF_WARRANTY";
+
 export interface RepairOrder {
   id: string;
   repairOrderNumber: string;
   technicianName: string;
   customerName: string;
+  warrantyStatus: WarrantyStatus;
   notes?: string | null;
   createdAt: Date;
   updatedAt?: Date | null;
@@ -42,6 +45,7 @@ export interface RepairOrder {
 export interface CreateRepairOrderInput {
   technicianName: string;
   customerName: string;
+  warrantyStatus?: WarrantyStatus;
   items: Array<{
     productId: string;
     quantity: number;
@@ -56,6 +60,7 @@ export interface CreateRepairOrderInput {
 export interface RepairOrderFilters {
   technicianName?: string;
   customerName?: string;
+  warrantyStatus?: WarrantyStatus | "ALL";
   dateFrom?: Date;
   dateTo?: Date;
   search?: string;
@@ -67,6 +72,7 @@ export interface RepairOrderFilters {
  */
 export interface RepairOrderReportRow {
   technicianName: string;
+  warrantyStatus: WarrantyStatus;
   date: string;
   totalOrders: number;
   totalMaterials: number;

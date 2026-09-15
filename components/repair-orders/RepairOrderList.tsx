@@ -66,6 +66,7 @@ export function RepairOrderList() {
   // State for filters
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTechnician, setSelectedTechnician] = useState<string>("all");
+  const [selectedWarranty, setSelectedWarranty] = useState<string>("all");
 
   // State for row selection (multi-select)
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -95,9 +96,12 @@ export function RepairOrderList() {
         selectedTechnician === "all" ||
         order.technicianName === selectedTechnician;
 
-      return matchesSearch && matchesTechnician;
+      const matchesWarranty =
+        selectedWarranty === "all" || order.warrantyStatus === selectedWarranty;
+
+      return matchesSearch && matchesTechnician && matchesWarranty;
     });
-  }, [repairOrders, searchTerm, selectedTechnician]);
+  }, [repairOrders, searchTerm, selectedTechnician, selectedWarranty]);
 
   // Get unique technicians for filter
   const uniqueTechnicians = useMemo(() => {
@@ -320,6 +324,8 @@ export function RepairOrderList() {
             setSearchTerm={setSearchTerm}
             selectedTechnician={selectedTechnician}
             setSelectedTechnician={setSelectedTechnician}
+            selectedWarranty={selectedWarranty}
+            setSelectedWarranty={setSelectedWarranty}
             uniqueTechnicians={uniqueTechnicians}
           />
 
@@ -404,6 +410,9 @@ export function RepairOrderList() {
                       <th className="px-4 py-3 font-medium text-gray-700 dark:text-white/85">
                         Customer
                       </th>
+                      <th className="px-4 py-3 font-medium text-gray-700 dark:text-white/85">
+                        Warranty
+                      </th>
                       <th className="px-4 py-3 font-medium text-gray-700 dark:text-white/85 text-right">
                         Materials
                       </th>
@@ -456,6 +465,19 @@ export function RepairOrderList() {
                           </td>
                           <td className="px-4 py-3 text-gray-700 dark:text-white/80">
                             {order.customerName}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                                order.warrantyStatus === "IN_WARRANTY"
+                                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                                  : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                              }`}
+                            >
+                              {order.warrantyStatus === "IN_WARRANTY"
+                                ? "In Warranty"
+                                : "Out of Warranty"}
+                            </span>
                           </td>
                           <td className="px-4 py-3 text-right text-gray-700 dark:text-white/80">
                             {totalMaterials} items

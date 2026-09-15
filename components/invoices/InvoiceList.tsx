@@ -293,6 +293,14 @@ const InvoiceList = React.memo(
                           value: formatCurrency(sv.value),
                         })) ?? [],
                     },
+                    {
+                      title: `Breakdown by category (${invoicesPageStats.categoryValues?.length ?? 0})`,
+                      items:
+                        invoicesPageStats.categoryValues?.map((cv) => ({
+                          label: cv.categoryName,
+                          value: formatCurrency(cv.value),
+                        })) ?? [],
+                    },
                   ]}
                 />
                 <StatisticsCard

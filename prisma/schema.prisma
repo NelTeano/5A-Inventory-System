@@ -380,20 +380,27 @@ model AuditLog {
 }
 
 // Repair Order - for tracking materials used in repairs (does not affect product stock)
+enum WarrantyStatus {
+  IN_WARRANTY
+  OUT_OF_WARRANTY
+}
+
 model RepairOrder {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  repairOrderNumber String   @unique // Unique repair order number (e.g., RO-2024-001)
-  technicianName    String   // Name of technician performing repair
-  customerName      String   // Name of customer for whom repair is done
-  notes             String?  // Optional repair notes
-  createdAt         DateTime @default(now()) @db.Date
-  updatedAt         DateTime? @db.Date // Manually managed
-  createdBy         String   @db.ObjectId // Admin who created this repair order
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  repairOrderNumber String          @unique // Unique repair order number (e.g., RO-2024-001)
+  technicianName    String          // Name of technician performing repair
+  customerName      String          // Name of customer for whom repair is done
+  warrantyStatus    WarrantyStatus  @default(OUT_OF_WARRANTY)
+  notes             String?         // Optional repair notes
+  createdAt         DateTime        @default(now()) @db.Date
+  updatedAt         DateTime?       @db.Date // Manually managed
+  createdBy         String          @db.ObjectId // Admin who created this repair order
   items             RepairOrderItem[] // Materials used in repair
 
   @@index([createdBy])
   @@index([createdAt])
   @@index([technicianName])
+  @@index([warrantyStatus])
 }
 
 model RepairOrderItem {

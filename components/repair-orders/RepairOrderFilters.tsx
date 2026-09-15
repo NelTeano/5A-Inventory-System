@@ -22,6 +22,8 @@ interface RepairOrderFiltersProps {
   setSearchTerm: (term: string) => void;
   selectedTechnician: string;
   setSelectedTechnician: (technician: string) => void;
+  selectedWarranty: string;
+  setSelectedWarranty: (status: string) => void;
   uniqueTechnicians: string[];
 }
 
@@ -30,6 +32,8 @@ export function RepairOrderFilters({
   setSearchTerm,
   selectedTechnician,
   setSelectedTechnician,
+  selectedWarranty,
+  setSelectedWarranty,
   uniqueTechnicians,
 }: RepairOrderFiltersProps) {
   return (
@@ -67,6 +71,17 @@ export function RepairOrderFilters({
               {tech}
             </SelectItem>
           ))}
+        </SelectContent>
+      </Select>
+
+      <Select value={selectedWarranty} onValueChange={setSelectedWarranty}>
+        <SelectTrigger className="h-10 w-full sm:w-48 rounded-[28px] border border-violet-400/30 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-gray-900 dark:text-white">
+          <SelectValue placeholder="All Warranty" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Warranty</SelectItem>
+          <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
+          <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
         </SelectContent>
       </Select>
     </div>

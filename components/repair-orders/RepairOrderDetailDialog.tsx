@@ -72,6 +72,13 @@ export function RepairOrderDetailDialog({
             </div>
           </div>
 
+          <div className="rounded-xl border border-violet-400/20 bg-gradient-to-br from-violet-500/10 to-transparent p-4">
+            <p className="text-sm text-gray-500 dark:text-white/60">Warranty Status</p>
+            <p className="mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+              {repairOrder.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty"}
+            </p>
+          </div>
+
           {/* Technician and Customer */}
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 rounded-xl border border-violet-400/20 bg-gradient-to-br from-violet-500/10 to-transparent">

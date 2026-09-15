@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       repairOrderNumber: order.repairOrderNumber,
       technicianName: order.technicianName,
       customerName: order.customerName,
+      warrantyStatus: order.warrantyStatus ?? "OUT_OF_WARRANTY",
       notes: order.notes,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt?.toISOString() || null,
@@ -101,6 +102,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const warrantyStatus =
+      body.warrantyStatus === "IN_WARRANTY" ||
+      body.warrantyStatus === "OUT_OF_WARRANTY"
+        ? body.warrantyStatus
+        : "OUT_OF_WARRANTY";
+
     if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
       return NextResponse.json(
         { error: "At least one material/item is required" },
@@ -121,6 +128,7 @@ export async function POST(request: NextRequest) {
     const repairOrderData: CreateRepairOrderInput = {
       technicianName: body.technicianName,
       customerName: body.customerName,
+      warrantyStatus,
       items: body.items,
       notes: body.notes,
     };
@@ -134,6 +142,7 @@ export async function POST(request: NextRequest) {
       repairOrderNumber: repairOrder.repairOrderNumber,
       technicianName: repairOrder.technicianName,
       customerName: repairOrder.customerName,
+      warrantyStatus: repairOrder.warrantyStatus,
       notes: repairOrder.notes,
       createdAt: repairOrder.createdAt.toISOString(),
       updatedAt: repairOrder.updatedAt?.toISOString() || null,

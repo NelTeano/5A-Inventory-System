@@ -1,7 +1,7 @@
 /**
  * Products Bulk Delete API Route Handler
  * Allows deleting multiple products at once
- * Products with active orders are skipped
+ * Historical orders and invoices are preserved while product references are removed.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -13,11 +13,11 @@ import {
   deleteProductImageFromImageKit,
 } from "@/lib/imagekit";
 import { createAuditLog } from "@/prisma/audit-log";
+import { deleteProduct } from "@/prisma/product";
 
 interface SkippedProduct {
   id: string;
   name: string;
-  reason: string;
 }
 
 /**
@@ -72,63 +72,13 @@ export async function POST(request: NextRequest) {
 
     const productIds = products.map((p) => p.id);
     const skippedProducts: SkippedProduct[] = [];
-    const deletableIds: string[] = [];
+    const deletableIds = productIds;
 
-    // Check each product for active orders
-    const orderItems = await prisma.orderItem.findMany({
-      where: { productId: { in: productIds } },
-      include: {
-        order: {
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-      },
-    });
-
-    // Group order items by product ID
-    const ordersByProduct = new Map<string, typeof orderItems>();
-    for (const item of orderItems) {
-      const existing = ordersByProduct.get(item.productId) || [];
-      existing.push(item);
-      ordersByProduct.set(item.productId, existing);
-    }
-
-    for (const product of products) {
-      const productOrders = ordersByProduct.get(product.id) || [];
-
-      if (productOrders.length > 0) {
-        // Check if any orders are active (not delivered or cancelled)
-        const activeOrders = productOrders.filter(
-          (item) =>
-            item.order.status !== "delivered" &&
-            item.order.status !== "cancelled",
-        );
-
-        if (activeOrders.length > 0) {
-          const uniqueStatuses = [
-            ...new Set(activeOrders.map((o) => o.order.status)),
-          ];
-          skippedProducts.push({
-            id: product.id,
-            name: product.name,
-            reason: `Has ${activeOrders.length} active order(s) (${uniqueStatuses.join(", ")})`,
-          });
-          continue;
-        }
-      }
-
-      deletableIds.push(product.id);
-    }
-
-    // Delete eligible products
     let deletedCount = 0;
     for (const productId of deletableIds) {
-      const product = products.find((p) => p.id === productId);
+      const product = products.find((item) => item.id === productId);
       if (!product) continue;
 
-      // Clean up ImageKit files (async, don't block)
       if (product.qrCodeFileId) {
         deleteQRCodeFromImageKit(product.qrCodeFileId).catch((error) => {
           logger.error(
@@ -147,7 +97,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Delete from database
-      await prisma.product.delete({ where: { id: productId } });
+      await deleteProduct(productId);
 
       // Audit log
       createAuditLog({
