@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { getSessionFromRequest } from "@/utils/auth";
 import { logger } from "@/lib/logger";
 import {
@@ -170,6 +171,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(transformedOrder, { status: 201 });
   } catch (error) {
     logger.error("Error creating repair order:", error);
+
+    const isDuplicateNumber =
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002";
+
+    if (isDuplicateNumber) {
+      return NextResponse.json(
+        {
+          error:
+            "Could not assign a unique repair order number. Please try again.",
+        },
+        { status: 409 },
+      );
+    }
+
     return NextResponse.json(
       {
         error:
