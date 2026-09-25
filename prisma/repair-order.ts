@@ -5,11 +5,18 @@
  */
 
 import { prisma } from "@/prisma/client";
+import { Prisma } from "@prisma/client";
 import type { CreateRepairOrderInput } from "@/types/repair-order";
+
+const MAX_REPAIR_ORDER_CREATE_ATTEMPTS = 5;
 
 /**
  * Generate unique repair order number
  * Format: RO-YYYY-MMDD-XXXX (e.g., RO-2024-0116-0001)
+ *
+ * Sequence is derived from the highest existing number for today
+ * (not a count), so deletions leave gaps that are safely skipped
+ * instead of producing duplicate numbers.
  *
  * @returns Promise<string> - Unique repair order number
  */
@@ -18,22 +25,32 @@ export async function generateRepairOrderNumber(): Promise<string> {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
+  const prefix = `RO-${year}-${month}${day}-`;
 
-  // Check for existing repair orders today to generate sequential number
-  const todayStart = new Date(year, now.getMonth(), now.getDate());
-  const todayEnd = new Date(year, now.getMonth(), now.getDate() + 1);
-
-  const todayOrders = await prisma.repairOrder.count({
+  const existingOrders = await prisma.repairOrder.findMany({
     where: {
-      createdAt: {
-        gte: todayStart,
-        lt: todayEnd,
+      repairOrderNumber: {
+        startsWith: prefix,
       },
+    },
+    select: {
+      repairOrderNumber: true,
     },
   });
 
-  const sequence = String(todayOrders + 1).padStart(4, "0");
-  return `RO-${year}-${month}${day}-${sequence}`;
+  let maxSequence = 0;
+  for (const order of existingOrders) {
+    const sequence = Number.parseInt(
+      order.repairOrderNumber.slice(prefix.length),
+      10,
+    );
+    if (!Number.isNaN(sequence) && sequence > maxSequence) {
+      maxSequence = sequence;
+    }
+  }
+
+  const sequence = String(maxSequence + 1).padStart(4, "0");
+  return `${prefix}${sequence}`;
 }
 
 /**
@@ -48,10 +65,7 @@ export async function createRepairOrder(
   data: CreateRepairOrderInput,
   userId: string,
 ) {
-  // Generate unique repair order number
-  const repairOrderNumber = await generateRepairOrderNumber();
-
-  // Calculate totals and prepare items
+  // Calculate totals and prepare items (product snapshots)
   let totalValue = 0;
   const orderItemsData = [];
 
@@ -79,25 +93,46 @@ export async function createRepairOrder(
     });
   }
 
-  // Create repair order with items in a single transaction
-  const repairOrder = await prisma.repairOrder.create({
-    data: {
-      repairOrderNumber,
-      technicianName: data.technicianName,
-      customerName: data.customerName,
-      warrantyStatus: data.warrantyStatus || "OUT_OF_WARRANTY",
-      notes: data.notes || null,
-      createdBy: userId,
-      items: {
-        create: orderItemsData,
-      },
-    },
-    include: {
-      items: true,
-    },
-  });
+  // Create repair order with items, retrying if the generated number
+  // races with a concurrent create (unique constraint violation)
+  for (let attempt = 1; attempt <= MAX_REPAIR_ORDER_CREATE_ATTEMPTS; attempt++) {
+    const repairOrderNumber = await generateRepairOrderNumber();
 
-  return repairOrder;
+    try {
+      const repairOrder = await prisma.repairOrder.create({
+        data: {
+          repairOrderNumber,
+          technicianName: data.technicianName,
+          customerName: data.customerName,
+          warrantyStatus: data.warrantyStatus || "OUT_OF_WARRANTY",
+          notes: data.notes || null,
+          createdBy: userId,
+          items: {
+            create: orderItemsData,
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      return repairOrder;
+    } catch (error) {
+      const isDuplicateNumber =
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002" &&
+        (error.meta?.target === undefined ||
+          (Array.isArray(error.meta?.target)
+            ? error.meta.target.includes("repairOrderNumber")
+            : error.meta?.target === "repairOrderNumber"));
+
+      if (!isDuplicateNumber || attempt === MAX_REPAIR_ORDER_CREATE_ATTEMPTS) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error("Failed to generate a unique repair order number");
 }
 
 /**
