@@ -16,14 +16,14 @@ import {
   FileText,
   Truck,
   Edit,
-  Trash2,
+  CircleX,
   PhilippinePeso,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useQueryClient } from "@tanstack/react-query";
-import { useOrder, useDeleteOrder } from "@/hooks/queries";
+import { useOrder, useUpdateOrder } from "@/hooks/queries";
 import { useBackWithRefresh } from "@/hooks/use-back-with-refresh";
 import { queryKeys, invalidateAllRelatedQueries } from "@/lib/react-query";
 import { useAuth } from "@/contexts";
@@ -282,8 +282,8 @@ export default function OrderDetailPage() {
       timeouts.forEach((t) => clearTimeout(t));
     };
   }, [orderId, queryClient, router]);
-  const deleteOrderMutation = useDeleteOrder();
-  const isCancelling = deleteOrderMutation.isPending;
+  const updateOrderMutation = useUpdateOrder();
+  const isCancelling = updateOrderMutation.isPending;
   const isSupplierRole = user?.role === "supplier";
   const isClientRole = user?.role === "client";
   const disableOrderActions = isSupplierRole || isClientRole;
@@ -301,16 +301,18 @@ export default function OrderDetailPage() {
 
   const handleConfirmCancelOrder = useCallback(() => {
     if (!order) return;
-    deleteOrderMutation.mutate(order.id, {
-      onSuccess: () => {
-        setCancelDialogOpen(false);
-        router.refresh();
+    updateOrderMutation.mutate(
+      {
+        id: order.id,
+        data: { status: "cancelled", cancelledAt: new Date() },
       },
-      onError: () => {
-        setCancelDialogOpen(false);
+      {
+        onSuccess: () => {
+          setCancelDialogOpen(false);
+        },
       },
-    });
-  }, [order, deleteOrderMutation, router]);
+    );
+  }, [order, updateOrderMutation]);
 
   // Mark component as mounted after client-side hydration
   useEffect(() => {
@@ -999,7 +1001,7 @@ export default function OrderDetailPage() {
                       disabled={isCancelling || disableOrderActions}
                       className="w-full sm:w-auto gap-2 rounded-xl border border-rose-400/30 bg-gradient-to-r from-rose-500/70 via-rose-500/50 to-rose-500/30 text-white shadow-[0_10px_25px_rgba(225,29,72,0.35)] backdrop-blur-sm hover:border-rose-300/50 hover:from-rose-500/80 hover:via-rose-500/60 hover:to-rose-500/40 transition-all duration-300 disabled:opacity-50"
                     >
-                      <Trash2 className="h-4 w-4 shrink-0" />
+                      <CircleX className="h-4 w-4 shrink-0" />
                       {isCancelling ? "Cancelling..." : "Cancel Order"}
                     </Button>
                   </span>
@@ -1018,7 +1020,7 @@ export default function OrderDetailPage() {
             open={cancelDialogOpen}
             onOpenChange={setCancelDialogOpen}
             title="Cancel Order"
-            description={`Are you sure you want to cancel order ${order.orderNumber}? This action cannot be undone.`}
+            description={`Are you sure you want to cancel order ${order.orderNumber}? It will remain in your order history.`}
             actionLabel="Cancel Order"
             actionLoadingLabel="Cancelling..."
             isLoading={isCancelling}
