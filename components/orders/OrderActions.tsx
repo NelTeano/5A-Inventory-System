@@ -16,9 +16,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Eye, Edit, Trash2, Star } from "lucide-react";
+import { MoreVertical, Eye, Edit, Trash2, Star, CircleX } from "lucide-react";
 import Link from "next/link";
-import { useDeleteOrder } from "@/hooks/queries";
+import { useDeleteOrder, useUpdateOrder } from "@/hooks/queries";
 import { useAuth } from "@/contexts";
 
 interface OrderActionsProps {
@@ -40,7 +40,9 @@ export default function OrderActions({
 }: OrderActionsProps) {
   const { user } = useAuth();
   const deleteOrderMutation = useDeleteOrder();
+  const updateOrderMutation = useUpdateOrder();
   const isDeleting = deleteOrderMutation.isPending;
+  const isCancelling = updateOrderMutation.isPending;
   const isSupplierRole = user?.role === "supplier";
   const isClientRole = user?.role === "client";
   const disableOrderActions = isSupplierRole || isClientRole;
@@ -68,6 +70,29 @@ export default function OrderActions({
       // Error handling
     }
   };
+
+  const handleCancelOrder = async () => {
+    if (
+      window.confirm(
+        `Are you sure you want to cancel order ${order.orderNumber}? It will remain in your order history.`,
+      )
+    ) {
+      try {
+        await updateOrderMutation.mutateAsync({
+          id: order.id,
+          data: { status: "cancelled", cancelledAt: new Date() },
+        });
+      } catch (error) {
+        // Error toast is handled by the mutation hook
+      }
+    }
+  };
+
+  const canCancelOrder =
+    order.status !== "cancelled" &&
+    order.status !== "shipped" &&
+    order.status !== "delivered" &&
+    !order.trackingNumber;
 
   return (
     <DropdownMenu>
@@ -123,6 +148,23 @@ export default function OrderActions({
             Write / Edit review
           </DropdownMenuItem>
         )}
+        <DropdownMenuItem
+          className="text-amber-700 dark:text-amber-400"
+          onClick={handleCancelOrder}
+          disabled={!canCancelOrder || isCancelling || disableOrderActions}
+          title={
+            canCancelOrder
+              ? undefined
+              : "This order can no longer be cancelled."
+          }
+        >
+          <CircleX className="h-4 w-4" />
+          {isCancelling
+            ? "Cancelling..."
+            : order.status === "cancelled"
+              ? "Already Cancelled"
+              : "Cancel Order"}
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="text-red-600 dark:text-red-400"
           onClick={handleDeleteOrder}
