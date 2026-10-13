@@ -62,6 +62,7 @@ export type {
 export type {
   RepairOrder,
   RepairOrderItem,
+  WarrantyStatus,
   CreateRepairOrderInput,
   RepairOrderFilters,
   RepairOrderReportRow,

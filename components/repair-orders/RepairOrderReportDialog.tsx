@@ -42,7 +42,7 @@ import {
 } from "lucide-react";
 import { exportToCSV, exportToExcel } from "@/lib/export";
 import { useToast } from "@/hooks/use-toast";
-import type { RepairOrder } from "@/types";
+import type { RepairOrder, WarrantyStatus } from "@/types";
 
 const formatCurrency = (value: number) =>
   `₱${value.toLocaleString(undefined, {
@@ -68,7 +68,7 @@ interface DailyReportRow {
   date: string;
   dateLabel: string;
   technicianName: string;
-  warrantyStatus: "IN_WARRANTY" | "OUT_OF_WARRANTY";
+  warrantyStatus: WarrantyStatus;
   orderCount: number;
   totalQuantity: number;
   totalValue: number;
@@ -79,7 +79,7 @@ interface WeeklyReportRow {
   weekStart: string;
   weekLabel: string;
   technicianName: string;
-  warrantyStatus: "IN_WARRANTY" | "OUT_OF_WARRANTY";
+  warrantyStatus: WarrantyStatus;
   orderCount: number;
   totalQuantity: number;
   totalValue: number;
@@ -102,6 +102,16 @@ function formatWeekLabel(weekStart: Date): string {
   const end = new Date(weekStart);
   end.setDate(end.getDate() + 6);
   return `${weekStart.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+}
+
+const warrantyStatusLabels: Record<WarrantyStatus, string> = {
+  IN_WARRANTY: "In Warranty",
+  OUT_OF_WARRANTY: "Out of Warranty",
+  RETURN: "Return",
+};
+
+function formatWarrantyStatus(status: WarrantyStatus): string {
+  return warrantyStatusLabels[status];
 }
 
 function mergeMaterials(
@@ -277,7 +287,9 @@ export function RepairOrderReportDialog({
   const { toast } = useToast();
   const [reportType, setReportType] = useState<"daily" | "weekly">("daily");
   const [dateFilter, setDateFilter] = useState<string>("all");
-  const [warrantyFilter, setWarrantyFilter] = useState<"all" | "IN_WARRANTY" | "OUT_OF_WARRANTY">("all");
+  const [warrantyFilter, setWarrantyFilter] = useState<
+    "all" | WarrantyStatus
+  >("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -425,7 +437,7 @@ export function RepairOrderReportDialog({
           csvData.push({
             [reportType === "daily" ? "Date" : "Week"]: dateCol,
             Technician: row.technicianName,
-            Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
+            Warranty: formatWarrantyStatus(row.warrantyStatus),
             Product: "—",
             SKU: "—",
             "Qty Used": 0,
@@ -439,7 +451,7 @@ export function RepairOrderReportDialog({
             csvData.push({
               [reportType === "daily" ? "Date" : "Week"]: dateCol,
               Technician: row.technicianName,
-              Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
+              Warranty: formatWarrantyStatus(row.warrantyStatus),
               Product: mat.productName,
               SKU: mat.sku || "—",
               "Qty Used": mat.quantity,
@@ -504,7 +516,7 @@ export function RepairOrderReportDialog({
           excelData.push({
             [reportType === "daily" ? "Date" : "Week"]: dateCol,
             Technician: row.technicianName,
-            Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
+            Warranty: formatWarrantyStatus(row.warrantyStatus),
             Product: "—",
             SKU: "—",
             "Qty Used": 0,
@@ -518,7 +530,7 @@ export function RepairOrderReportDialog({
             excelData.push({
               [reportType === "daily" ? "Date" : "Week"]: dateCol,
               Technician: row.technicianName,
-              Warranty: row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty",
+              Warranty: formatWarrantyStatus(row.warrantyStatus),
               Product: mat.productName,
               SKU: mat.sku || "—",
               "Qty Used": mat.quantity,
@@ -650,7 +662,9 @@ export function RepairOrderReportDialog({
 
             <Select
               value={warrantyFilter}
-              onValueChange={(value) => setWarrantyFilter(value as "all" | "IN_WARRANTY" | "OUT_OF_WARRANTY")}
+              onValueChange={(value) =>
+                setWarrantyFilter(value as "all" | WarrantyStatus)
+              }
             >
               <SelectTrigger className="h-10 w-full sm:w-52 rounded-[28px] border border-violet-400/30 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-gray-900 dark:text-white">
                 <SelectValue placeholder="All warranty" />
@@ -659,6 +673,7 @@ export function RepairOrderReportDialog({
                 <SelectItem value="all">All Warranty</SelectItem>
                 <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
                 <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
+                <SelectItem value="RETURN">Return</SelectItem>
               </SelectContent>
             </Select>
 
@@ -852,8 +867,16 @@ export function RepairOrderReportDialog({
                               {row.technicianName}
                             </td>
                             <td className="px-4 py-2 text-gray-700 dark:text-white/80">
-                              <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-medium ${row.warrantyStatus === "IN_WARRANTY" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700 dark:text-amber-300"}`}>
-                                {row.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty"}
+                              <span
+                                className={`inline-flex rounded-full px-2 py-1 text-[10px] font-medium ${
+                                  row.warrantyStatus === "IN_WARRANTY"
+                                    ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                                    : row.warrantyStatus === "RETURN"
+                                      ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"
+                                      : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                                }`}
+                              >
+                                {formatWarrantyStatus(row.warrantyStatus)}
                               </span>
                             </td>
                             <td className="px-4 py-2 text-right text-gray-700 dark:text-white/80">

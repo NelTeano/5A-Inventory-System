@@ -471,12 +471,16 @@ export function RepairOrderList() {
                               className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
                                 order.warrantyStatus === "IN_WARRANTY"
                                   ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                                  : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                                  : order.warrantyStatus === "RETURN"
+                                    ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"
+                                    : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
                               }`}
                             >
                               {order.warrantyStatus === "IN_WARRANTY"
                                 ? "In Warranty"
-                                : "Out of Warranty"}
+                                : order.warrantyStatus === "RETURN"
+                                  ? "Return"
+                                  : "Out of Warranty"}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right text-gray-700 dark:text-white/80">

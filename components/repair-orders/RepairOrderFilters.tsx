@@ -82,6 +82,7 @@ export function RepairOrderFilters({
           <SelectItem value="all">All Warranty</SelectItem>
           <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
           <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
+          <SelectItem value="RETURN">Return</SelectItem>
         </SelectContent>
       </Select>
     </div>

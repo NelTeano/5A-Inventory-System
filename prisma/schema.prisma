@@ -383,6 +383,7 @@ model AuditLog {
 enum WarrantyStatus {
   IN_WARRANTY
   OUT_OF_WARRANTY
+  RETURN
 }
 
 model RepairOrder {

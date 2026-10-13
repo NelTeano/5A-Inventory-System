@@ -38,7 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 const repairOrderSchema = z.object({
   technicianName: z.string().min(1, "Technician name is required"),
   customerName: z.string().min(1, "Customer name is required"),
-  warrantyStatus: z.enum(["IN_WARRANTY", "OUT_OF_WARRANTY"]),
+  warrantyStatus: z.enum(["IN_WARRANTY", "OUT_OF_WARRANTY", "RETURN"]),
   items: z
     .array(
       z.object({
@@ -245,7 +245,10 @@ export function RepairOrderDialog({
                 <Select
                   value={watch("warrantyStatus")}
                   onValueChange={(value) =>
-                    setValue("warrantyStatus", value as "IN_WARRANTY" | "OUT_OF_WARRANTY")
+                    setValue(
+                      "warrantyStatus",
+                      value as RepairOrderFormData["warrantyStatus"],
+                    )
                   }
                 >
                   <SelectTrigger className="h-11 border-violet-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-violet-400 focus-visible:border-violet-400 focus:ring-violet-500/50 focus-visible:ring-violet-500/50 shadow-[0_10px_30px_rgba(139,92,246,0.15)]">
@@ -254,6 +257,7 @@ export function RepairOrderDialog({
                   <SelectContent>
                     <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
                     <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
+                    <SelectItem value="RETURN">Return</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

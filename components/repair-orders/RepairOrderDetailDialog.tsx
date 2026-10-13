@@ -74,8 +74,20 @@ export function RepairOrderDetailDialog({
 
           <div className="rounded-xl border border-violet-400/20 bg-gradient-to-br from-violet-500/10 to-transparent p-4">
             <p className="text-sm text-gray-500 dark:text-white/60">Warranty Status</p>
-            <p className="mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
-              {repairOrder.warrantyStatus === "IN_WARRANTY" ? "In Warranty" : "Out of Warranty"}
+            <p
+              className={`mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${
+                repairOrder.warrantyStatus === "IN_WARRANTY"
+                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                  : repairOrder.warrantyStatus === "RETURN"
+                    ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"
+                    : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+              }`}
+            >
+              {repairOrder.warrantyStatus === "IN_WARRANTY"
+                ? "In Warranty"
+                : repairOrder.warrantyStatus === "RETURN"
+                  ? "Return"
+                  : "Out of Warranty"}
             </p>
           </div>
 
