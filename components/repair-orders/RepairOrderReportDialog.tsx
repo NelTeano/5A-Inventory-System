@@ -108,6 +108,7 @@ const warrantyStatusLabels: Record<WarrantyStatus, string> = {
   IN_WARRANTY: "In Warranty",
   OUT_OF_WARRANTY: "Out of Warranty",
   RETURN: "Return",
+  INSTALLATION: "Installation",
 };
 
 function formatWarrantyStatus(status: WarrantyStatus): string {
@@ -674,6 +675,7 @@ export function RepairOrderReportDialog({
                 <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
                 <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
                 <SelectItem value="RETURN">Return</SelectItem>
+                <SelectItem value="INSTALLATION">Installation</SelectItem>
               </SelectContent>
             </Select>
 
@@ -873,7 +875,9 @@ export function RepairOrderReportDialog({
                                     ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                                     : row.warrantyStatus === "RETURN"
                                       ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"
-                                      : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                                      : row.warrantyStatus === "INSTALLATION"
+                                        ? "bg-sky-500/15 text-sky-700 dark:text-sky-300"
+                                        : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
                                 }`}
                               >
                                 {formatWarrantyStatus(row.warrantyStatus)}

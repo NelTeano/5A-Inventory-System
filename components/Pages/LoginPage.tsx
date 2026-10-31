@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
-import { Shield, Loader2, Store, ShoppingBag, Users } from "lucide-react";
+import { Shield, Loader2, Store, ShoppingBag, Users, BarChart3, QrCode, BellRing } from "lucide-react";
 
 /**
  * Test account credentials for quick login (demo / production).
@@ -217,20 +217,85 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),transparent_55%),radial-gradient(circle_at_bottom,_rgba(236,72,153,0.12),transparent_65%)] dark:bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),transparent_55%),radial-gradient(circle_at_bottom,_rgba(236,72,153,0.12),transparent_65%)]">
-      {/* Background overlay layer - lighter for light mode, darker for dark mode */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.3),transparent_60%)] dark:bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05),transparent_60%)]"></div>
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-sky-50 via-white to-sky-100 dark:from-[#04070f] dark:via-[#0a1220] dark:to-[#07182a]">
+      {/* Photo background layer (first child = paints below the scrim/blobs above it) */}
+      <Image
+        src="/login.png"
+        alt=""
+        fill
+        priority
+        className="pointer-events-none object-cover"
+        sizes="100vw"
+      />
+      {/* Scrim only in dark mode so the photo keeps its original colors in light mode */}
+      <div className="pointer-events-none absolute inset-0 z-0 dark:bg-black/55"></div>
+      {/* Ambient drifting blobs */}
+      <div className="login-blob pointer-events-none absolute -left-40 -top-40 z-0 h-[30rem] w-[30rem] rounded-full bg-sky-400/30 blur-[110px] dark:bg-sky-600/25" />
+      <div className="login-blob-alt pointer-events-none absolute -bottom-44 -right-28 z-0 h-[34rem] w-[34rem] rounded-full bg-violet-400/25 blur-[110px] dark:bg-violet-600/20" />
+      <div className="login-blob-reverse pointer-events-none absolute right-1/4 top-1/4 z-0 h-80 w-80 rounded-full bg-cyan-300/25 blur-[100px] dark:bg-cyan-500/15" />
+      {/* Subtle grid pattern, faded toward the edges */}
+      <div className="pointer-events-none absolute inset-0 z-0 [background-size:56px_56px] [background-image:linear-gradient(to_right,rgba(12,74,110,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(12,74,110,0.07)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_center,black,transparent_78%)] dark:[background-image:linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)]" />
 
-      <div className="relative z-10 w-full">
-        <div className="flex flex-col lg:flex-row min-h-screen">
-          {/* Right Side - Login Form */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-0 sm:p-8 lg:p-12">
-            <div className="w-full max-w-md rounded-[28px] border border-sky-400/30 dark:border-white/10 bg-gradient-to-br from-sky-500/25 via-sky-500/10 to-sky-500/5 dark:from-white/5 dark:via-white/5 dark:to-white/5 backdrop-blur-sm shadow-[0_30px_80px_rgba(2,132,199,0.35)] dark:shadow-lg p-4 sm:p-8 transition-all duration-300 hover:shadow-[0_40px_100px_rgba(2,132,199,0.5)] dark:hover:shadow-[0_40px_100px_rgba(2,132,199,0.4)] hover:border-sky-300/50 dark:hover:border-sky-300/30">
-              <div className="space-y-2 mb-6">
-                <h2 className="text-2xl sm:text-2xl font-semibold text-gray-900 dark:text-white text-center">
+      {/* Floating feature chips (desktop only) */}
+      <div className="login-float pointer-events-none absolute left-[7%] top-[15%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <Store className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          Real-time Inventory
+        </span>
+      </div>
+      <div className="login-float login-float-delay-1 pointer-events-none absolute right-[7%] top-[22%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <ShoppingBag className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          Supplier Management
+        </span>
+      </div>
+      <div className="login-float login-float-delay-2 pointer-events-none absolute bottom-[16%] left-[9%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <Users className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          Team Collaboration
+        </span>
+      </div>
+      <div className="login-float login-float-delay-1 pointer-events-none absolute bottom-[24%] right-[10%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <Shield className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          Secure by Default
+        </span>
+      </div>
+      <div className="login-float login-float-delay-2 pointer-events-none absolute top-[45%] left-[14%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <BarChart3 className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          Smart Reports
+        </span>
+      </div>
+      <div className="login-float pointer-events-none absolute top-[52%] right-[15%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <QrCode className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          QR Code Tracking
+        </span>
+      </div>
+      <div className="login-float login-float-delay-1 pointer-events-none absolute top-[10%] right-[22%] z-0 hidden items-center gap-2 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-xl backdrop-blur-md lg:flex dark:border-white/10 dark:bg-white/5">
+        <BellRing className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+        <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+          Low Stock Alerts
+        </span>
+      </div>
+
+      <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-10 sm:px-8">
+        {/* Login card with rotating aurora glow + gradient border */}
+        <div className="relative w-full max-w-md">
+          <div className="login-aurora pointer-events-none absolute -inset-5 z-0 rounded-[72px] bg-[conic-gradient(from_0deg,rgba(56,189,248,0.55),rgba(167,139,250,0.55),rgba(34,211,238,0.55),rgba(96,165,250,0.55),rgba(56,189,248,0.55))] opacity-50 blur-2xl dark:opacity-70" />
+          <div className="relative z-10 w-full rounded-[4rem] bg-gradient-to-br from-white/70 via-sky-400/30 to-violet-400/20 p-px shadow-[0_30px_70px_-10px_rgba(0,0,0,0.55),0_18px_45px_-15px_rgba(2,132,199,0.55),0_60px_120px_-30px_rgba(0,0,0,0.45)] dark:from-white/10 dark:via-sky-500/30 dark:to-violet-500/20">
+            <div className="rounded-[63px] bg-white/85 dark:bg-[#0b1322]/85 px-4 py-8 sm:px-10 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5">
+              {/* Header */}
+              <div className="mb-8 space-y-3 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-cyan-500 to-sky-600 shadow-[0_12px_35px_rgba(2,132,199,0.5)]">
+                  <Shield className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
                   Welcome Back
                 </h2>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-white/70 text-center">
+                <div className="login-shimmer mx-auto h-1 w-24 rounded-full bg-gradient-to-r from-sky-500 via-cyan-400 to-sky-500"></div>
+                <p className="text-sm text-gray-600 sm:text-base dark:text-white/70">
                   Sign in to your account to continue
                 </p>
               </div>
@@ -409,8 +474,8 @@ export default function LoginPage() {
                   >
                     Sign up
                   </Link>
-                </p>
-              </div>
+                  </p>
+                </div>
             </div>
           </div>
         </div>

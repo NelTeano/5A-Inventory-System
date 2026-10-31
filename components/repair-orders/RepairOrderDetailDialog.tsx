@@ -80,14 +80,18 @@ export function RepairOrderDetailDialog({
                   ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                   : repairOrder.warrantyStatus === "RETURN"
                     ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"
-                    : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                    : repairOrder.warrantyStatus === "INSTALLATION"
+                      ? "bg-sky-500/15 text-sky-700 dark:text-sky-300"
+                      : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
               }`}
             >
               {repairOrder.warrantyStatus === "IN_WARRANTY"
                 ? "In Warranty"
                 : repairOrder.warrantyStatus === "RETURN"
                   ? "Return"
-                  : "Out of Warranty"}
+                  : repairOrder.warrantyStatus === "INSTALLATION"
+                    ? "Installation"
+                    : "Out of Warranty"}
             </p>
           </div>
 

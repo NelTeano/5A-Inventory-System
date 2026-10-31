@@ -38,7 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 const repairOrderSchema = z.object({
   technicianName: z.string().min(1, "Technician name is required"),
   customerName: z.string().min(1, "Customer name is required"),
-  warrantyStatus: z.enum(["IN_WARRANTY", "OUT_OF_WARRANTY", "RETURN"]),
+  warrantyStatus: z.enum(["IN_WARRANTY", "OUT_OF_WARRANTY", "RETURN", "INSTALLATION"]),
   items: z
     .array(
       z.object({
@@ -258,6 +258,7 @@ export function RepairOrderDialog({
                     <SelectItem value="IN_WARRANTY">In Warranty</SelectItem>
                     <SelectItem value="OUT_OF_WARRANTY">Out of Warranty</SelectItem>
                     <SelectItem value="RETURN">Return</SelectItem>
+                    <SelectItem value="INSTALLATION">Installation</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
