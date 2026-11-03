@@ -102,3 +102,88 @@
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out forwards;
 }
+
+/* Login page background - slow drifting ambient blobs */
+@keyframes loginBlobDrift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(48px, -36px) scale(1.08);
+  }
+}
+
+@keyframes loginBlobDriftAlt {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-56px, 40px) scale(0.92);
+  }
+}
+
+.login-blob {
+  animation: loginBlobDrift 18s ease-in-out infinite;
+}
+
+.login-blob-alt {
+  animation: loginBlobDriftAlt 22s ease-in-out infinite;
+}
+
+.login-blob-reverse {
+  animation: loginBlobDrift 26s ease-in-out infinite reverse;
+}
+
+/* Login page - rotating aurora glow behind the card */
+@keyframes loginAuroraSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-aurora {
+  animation: loginAuroraSpin 16s linear infinite;
+}
+
+/* Login page - shimmering gradient title text */
+@keyframes loginShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.login-shimmer {
+  background-size: 200% auto;
+  animation: loginShimmer 5s linear infinite;
+}
+
+/* Login page - gentle float for feature chips */
+@keyframes loginFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.login-float {
+  animation: loginFloat 6s ease-in-out infinite;
+}
+
+.login-float-delay-1 {
+  animation-delay: 1.5s;
+}
+
+.login-float-delay-2 {
+  animation-delay: 3s;
+}

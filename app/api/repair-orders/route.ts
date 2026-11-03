@@ -105,7 +105,9 @@ export async function POST(request: NextRequest) {
 
     const warrantyStatus =
       body.warrantyStatus === "IN_WARRANTY" ||
-      body.warrantyStatus === "OUT_OF_WARRANTY"
+      body.warrantyStatus === "OUT_OF_WARRANTY" ||
+      body.warrantyStatus === "RETURN" ||
+      body.warrantyStatus === "INSTALLATION"
         ? body.warrantyStatus
         : "OUT_OF_WARRANTY";
 

@@ -23,7 +23,7 @@ export interface RepairOrderItem {
  * Repair order interface
  * Matches Prisma RepairOrder model
  */
-export type WarrantyStatus = "IN_WARRANTY" | "OUT_OF_WARRANTY";
+export type WarrantyStatus = "IN_WARRANTY" | "OUT_OF_WARRANTY" | "RETURN" | "INSTALLATION";
 
 export interface RepairOrder {
   id: string;
