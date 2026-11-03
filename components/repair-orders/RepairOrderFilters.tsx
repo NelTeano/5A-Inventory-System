@@ -42,7 +42,7 @@ export function RepairOrderFilters({
       <div className="relative flex-1 sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-white/50 z-10" />
         <Input
-          placeholder="Search by order #, technician, or customer..."
+          placeholder="Search by order #, part number, name, notes, technician, or customer..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="h-10 pl-9 pr-9 w-full rounded-[28px] bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-violet-400/30 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/40"

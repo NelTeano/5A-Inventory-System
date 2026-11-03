@@ -25,6 +25,7 @@ import { OrderStatusDropDown } from "./OrderStatusFilter";
 import { PaymentStatusDropDown } from "./PaymentStatusFilter";
 import { OrderSourceDropDown, type OrderSourceFilterValue } from "./OrderSourceFilter";
 import type { Order } from "@/types";
+import { matchesOrderSearch } from "@/lib/orders/search";
 
 interface OrderFiltersProps {
   searchTerm: string;
@@ -65,11 +66,7 @@ export default function OrderFilters({
   const filteredOrders = useMemo(() => {
     return allOrders.filter((order) => {
       // Search filter
-      const matchesSearch =
-        !searchTerm ||
-        order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (order.notes &&
-          order.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = matchesOrderSearch(order, searchTerm);
 
       // Status filter
       const matchesStatus =
@@ -112,6 +109,7 @@ export default function OrderFilters({
         Total: order.total.toFixed(2),
         "Items Count": order.items.length,
         "Tracking Number": order.trackingNumber || "-",
+        Notes: order.notes || "-",
       }));
 
       const columns = [
@@ -169,6 +167,7 @@ export default function OrderFilters({
         Total: order.total.toFixed(2),
         "Items Count": order.items.length,
         "Tracking Number": order.trackingNumber || "-",
+        Notes: order.notes || "-",
       }));
 
       await exportToExcel({
@@ -185,6 +184,7 @@ export default function OrderFilters({
           { header: "Total", key: "Total", width: 12 },
           { header: "Items Count", key: "Items Count", width: 12 },
           { header: "Tracking Number", key: "Tracking Number", width: 20 },
+          { header: "Notes", key: "Notes", width: 40 },
         ],
         data: excelData,
       });
@@ -210,7 +210,7 @@ export default function OrderFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/60 z-10" />
           <Input
-            placeholder="Search by Order #..."
+            placeholder="Search by order #, part number, name, or notes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="h-10 pl-9 pr-10 w-full rounded-[28px] bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-sky-400/30 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/40 focus-visible:border-sky-400 focus-visible:ring-sky-500/50 shadow-[0_10px_30px_rgba(2,132,199,0.15)]"

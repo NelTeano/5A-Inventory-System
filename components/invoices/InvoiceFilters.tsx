@@ -24,6 +24,7 @@ import {
 import { InvoiceStatusDropDown } from "./InvoiceStatusFilter";
 import { InvoiceSourceDropDown, type InvoiceSourceFilterValue } from "./InvoiceSourceFilter";
 import type { Invoice } from "@/types";
+import { matchesInvoiceSearch } from "@/lib/invoices/search";
 
 interface InvoiceFiltersProps {
   searchTerm: string;
@@ -59,11 +60,7 @@ export default function InvoiceFilters({
   const filteredInvoices = useMemo(() => {
     return allInvoices.filter((invoice) => {
       // Search filter
-      const matchesSearch =
-        !searchTerm ||
-        invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (invoice.notes &&
-          invoice.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = matchesInvoiceSearch(invoice, searchTerm);
 
       // Status filter
       const matchesStatus =
@@ -199,7 +196,7 @@ export default function InvoiceFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/60 z-10" />
           <Input
-            placeholder="Search by Invoice #..."
+            placeholder="Search by invoice #, part number, name, or notes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="h-10 pl-9 pr-10 w-full rounded-[28px] bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-sky-400/30 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/40 focus-visible:border-sky-400 focus-visible:ring-sky-500/50 shadow-[0_10px_30px_rgba(2,132,199,0.15)]"
