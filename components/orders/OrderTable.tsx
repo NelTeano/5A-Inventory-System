@@ -37,6 +37,7 @@ import {
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { ChevronDown } from "lucide-react";
+import { matchesOrderSearch } from "@/lib/orders/search";
 
 interface OrderTableProps {
   data: Order[];
@@ -65,10 +66,7 @@ export const OrderTable = React.memo(function OrderTable({
 
   const filteredData = useMemo(() => {
     const filtered = data.filter((order) => {
-      // Search term filtering (by order number)
-      const searchMatch =
-        !searchTerm ||
-        order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      const searchMatch = matchesOrderSearch(order, searchTerm);
 
       // Status filtering
       const statusMatch =

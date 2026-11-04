@@ -13,6 +13,7 @@ import { createAuditLog } from "@/prisma/audit-log";
 import { withRateLimit, defaultRateLimits } from "@/lib/api/rate-limit";
 import { prisma } from "@/prisma/client";
 import type { CreateInvoiceInput, InvoiceFilters } from "@/types";
+import { getInvoiceOrderItems } from "@/lib/server/invoices-data";
 
 /**
  * GET /api/invoices
@@ -70,6 +71,9 @@ export async function GET(request: NextRequest) {
     const invoices = isClient
       ? await getInvoicesByClientId(userId, filters)
       : await getInvoicesByUser(userId, filters);
+    const orderItemsByOrderId = await getInvoiceOrderItems([
+      ...new Set(invoices.map((invoice) => invoice.orderId)),
+    ]);
 
     // For client role, resolve the actual issuer (product owner) from order items
     let issuerMap = new Map<string, { name: string | null; email: string }>();
@@ -157,6 +161,7 @@ export async function GET(request: NextRequest) {
         updatedBy: invoice.updatedBy,
         ...(issuer ? { issuedByName: issuer.name ?? issuer.email, issuedByEmail: issuer.email } : {}),
         ...(clientInfo ? { clientName: clientInfo.name ?? clientInfo.email, clientEmail: clientInfo.email } : {}),
+        orderItems: orderItemsByOrderId.get(invoice.orderId) ?? [],
       };
     });
 

@@ -46,7 +46,32 @@ export type InvoiceForPage = {
   issuedByName?: string | null;
   /** Invoice creator/issuer email */
   issuedByEmail?: string | null;
+  orderItems?: { productName: string; sku: string | null }[];
 };
+
+export async function getInvoiceOrderItems(
+  orderIds: string[],
+): Promise<Map<string, { productName: string; sku: string | null }[]>> {
+  if (orderIds.length === 0) return new Map();
+
+  const orders = await prisma.order.findMany({
+    where: { id: { in: orderIds } },
+    select: {
+      id: true,
+      items: { select: { productName: true, sku: true } },
+    },
+  });
+
+  return new Map(
+    orders.map((order) => [
+      order.id,
+      order.items.map((item) => ({
+        productName: item.productName,
+        sku: item.sku,
+      })),
+    ]),
+  );
+}
 
 /**
  * Fetch invoices for the given user (no filters — default list view).
@@ -63,6 +88,9 @@ export async function getInvoicesForUser(
   }
 
   const invoices = await getInvoicesByUser(userId, undefined);
+  const orderItemsByOrderId = await getInvoiceOrderItems([
+    ...new Set(invoices.map((invoice) => invoice.orderId)),
+  ]);
 
   // Resolve client names for admin display
   const clientIds = [...new Set(invoices.map((inv) => inv.clientId).filter(Boolean))] as string[];
@@ -104,6 +132,7 @@ export async function getInvoicesForUser(
       updatedBy: invoice.updatedBy,
       clientName: clientInfo?.name ?? clientInfo?.email ?? null,
       clientEmail: clientInfo?.email ?? null,
+      orderItems: orderItemsByOrderId.get(invoice.orderId) ?? [],
     };
   });
 
@@ -126,6 +155,9 @@ export async function getInvoicesForClientId(
   if (cached) return cached;
 
   const invoices = await getInvoicesByClientId(clientUserId, undefined);
+  const orderItemsByOrderId = await getInvoiceOrderItems([
+    ...new Set(invoices.map((invoice) => invoice.orderId)),
+  ]);
 
   // Resolve issuer (product owner) from order items for each invoice
   const orderIds = [...new Set(invoices.map((inv) => inv.orderId))];
@@ -197,6 +229,7 @@ export async function getInvoicesForClientId(
       updatedBy: invoice.updatedBy,
       issuedByName: issuer?.name ?? issuer?.email ?? null,
       issuedByEmail: issuer?.email ?? null,
+      orderItems: orderItemsByOrderId.get(invoice.orderId) ?? [],
     };
   });
 
@@ -222,6 +255,7 @@ export async function getClientInvoicesForProductOwner(
   );
   const orderIds = orders.map((o) => o.id);
   const invoices = await getInvoicesByOrderIds(orderIds);
+  const orderItemsByOrderId = await getInvoiceOrderItems(orderIds);
 
   const userIds = [...new Set(orders.map((o) => o.userId))];
   const users =
@@ -269,6 +303,7 @@ export async function getClientInvoicesForProductOwner(
     createdBy: invoice.createdBy,
     updatedBy: invoice.updatedBy,
     customerDisplay: orderCustomerDisplay.get(invoice.orderId) ?? null,
+    orderItems: orderItemsByOrderId.get(invoice.orderId) ?? [],
   }));
 
   await setCache(cacheKey, transformed, 300);

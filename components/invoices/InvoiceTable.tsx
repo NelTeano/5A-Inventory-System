@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
+import { matchesInvoiceSearch } from "@/lib/invoices/search";
 
 interface InvoiceTableProps {
   data: Invoice[];
@@ -62,10 +63,7 @@ export const InvoiceTable = React.memo(function InvoiceTable({
 
   const filteredData = useMemo(() => {
     const filtered = data.filter((invoice) => {
-      // Search term filtering (by invoice number)
-      const searchMatch =
-        !searchTerm ||
-        invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      const searchMatch = matchesInvoiceSearch(invoice, searchTerm);
 
       // Status filtering
       const statusMatch =

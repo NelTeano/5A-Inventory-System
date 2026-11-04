@@ -90,7 +90,15 @@ export function RepairOrderList() {
         order.technicianName
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.notes?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+          false) ||
+        order.items.some(
+          (item) =>
+            item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+              false),
+        );
 
       const matchesTechnician =
         selectedTechnician === "all" ||

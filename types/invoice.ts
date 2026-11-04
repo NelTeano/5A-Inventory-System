@@ -61,6 +61,8 @@ export interface Invoice {
   client?: { name: string | null; email: string } | null;
   /** Product owner(s) for items in the order (for detail Parties section) */
   invoiceProductOwners?: { userId: string; name: string | null; email: string }[];
+  /** Product names and part numbers from the linked order, for list search */
+  orderItems?: { productName: string; sku?: string | null }[];
 }
 
 /**
